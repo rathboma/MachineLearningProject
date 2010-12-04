@@ -16,8 +16,7 @@ public class Evaluator{
 		return null;
 		
 	}
-	
-	
+
 	
 	
 }

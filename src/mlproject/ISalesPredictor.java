@@ -1,12 +1,12 @@
 package mlproject;
 
-import java.util.Set;
+import java.util.Collection;
 import mlproject.models.Issue;
 
 
 public interface ISalesPredictor{
 	
-	public void Train(Set<Issue> issues);
+	public void Train(Collection<Issue> issues);
 	public double Predict(Issue issue);
 	
 }

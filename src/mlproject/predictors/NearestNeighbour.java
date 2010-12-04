@@ -1,6 +1,6 @@
 package mlproject.predictors;
 
-import java.util.Set;
+import java.util.Collection;
 
 import mlproject.models.Issue;
 
@@ -15,7 +15,7 @@ public class NearestNeighbour extends BasePredictor{
 	}
 
 	@Override
-	public void Train(Set<Issue> issues) {
+	public void Train(Collection<Issue> issues) {
 		// TODO Auto-generated method stub
 		
 	}

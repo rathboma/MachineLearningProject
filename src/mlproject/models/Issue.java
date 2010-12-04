@@ -1,6 +1,7 @@
 package mlproject.models;
 
 import java.util.HashMap;
+import java.util.Map;
 
 
 
@@ -8,6 +9,10 @@ public class Issue{
 	
 	HashMap<String, String> issueData;
 	String mImagePath;
+	
+	Map<GilesNatureOfImage, Boolean> natureOfImage;
+	Map<GilesNatureOfImage, GilesTopic> topic;
+	public Double sales;
 	
 	public Issue(String csvFields, String csv, String imagePath) throws Exception{
 		this.mImagePath = imagePath;
