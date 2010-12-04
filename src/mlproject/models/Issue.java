@@ -24,6 +24,11 @@ public class Issue{
 		return issueData.get(t);
 	}
 	
+	private void extractImageFeatures(String image){
+		
+		//TODO: Matthew
+	}
+	
 	
 	
 	
