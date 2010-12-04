@@ -1,0 +1,28 @@
+<project>
+	<classpath>
+	      <pathelement location="lib/*.jar"/>
+	   </classpath>
+	
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes"/>
+    </target>
+
+    <target name="jar">
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/ml.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="mlproject.Project"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run">
+        <java jar="build/jar/ml.jar" fork="true"/>
+    </target>
+
+</project>
