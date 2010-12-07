@@ -31,7 +31,7 @@ public class TestResults{
 			double actualSales = issue.sales;
 			
 			double loss = Math.abs(Math.log(salesPrediction) - Math.log(actualSales));
-			//System.out.println("actual: " + actualSales + " predicted: " + salesPrediction);
+			System.out.println("estimated " + issue.expectedSales + " actual: " + actualSales + " predicted: " + salesPrediction);
 			totalLoss += loss;
 		}
 		
