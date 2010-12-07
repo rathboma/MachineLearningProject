@@ -17,7 +17,7 @@ public class Project {
 	public static void main(String[] args){		
 		Collection<Issue> issues = null;
 		try {
-			issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
+			issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
 			for(Issue issue: issues) {
 				System.out.println(issue.Issue);
 				System.out.println(issue.date);
@@ -29,15 +29,23 @@ public class Project {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		DataLoader loader = new DataLoader(issues, 30);
 		
+// JUST FOR DEBUGGING
+//		System.out.println("# of issues: " + issues.size());
+//		System.out.println("# of test issues: " + loader.getTestData().size());
+//		System.out.println("# of training issues: " + loader.getTrainingData().size());
+//		
 		KNearestNeighbour knn = new KNearestNeighbour(new EuclideanMeasure(), 10); 
 		KNearestNeighbour knnW = new KNearestNeighbour(new EuclideanMeasureWeighted(), 10);
 		ExpectedSalesPredictor expSales = new ExpectedSalesPredictor();
 		
+		
+		
 		TestResults tester = new TestResults();
-		System.out.println("10 nearest neighbor loss: " + tester.testPredictor(knn, issues, 200, 50));
-		System.out.println("10 nearest neighbor weighted loss: " + tester.testPredictor(knnW, issues, 200, 50));
-		System.out.println("current loss: " + tester.testPredictor(expSales, issues, 200, 50));
+		System.out.println("10 nearest neighbor loss: " + tester.testPredictor(knn, loader, 200, 50));
+		System.out.println("10 nearest neighbor weighted loss: " + tester.testPredictor(knnW, loader, 200, 50));
+		System.out.println("current loss: " + tester.testPredictor(expSales, loader, 200, 50));
 	}
 	
 }
