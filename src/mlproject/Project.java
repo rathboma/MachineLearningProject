@@ -29,8 +29,8 @@ public class Project {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		DataLoader loader = new DataLoader(issues, 30);
 		
+		DataLoader loader = new DataLoader(issues, 30); //30% test samples.
 // JUST FOR DEBUGGING
 //		System.out.println("# of issues: " + issues.size());
 //		System.out.println("# of test issues: " + loader.getTestData().size());
@@ -43,9 +43,9 @@ public class Project {
 		
 		
 		TestResults tester = new TestResults();
-		System.out.println("10 nearest neighbor loss: " + tester.testPredictor(knn, loader, 200, 50));
-		System.out.println("10 nearest neighbor weighted loss: " + tester.testPredictor(knnW, loader, 200, 50));
-		System.out.println("current loss: " + tester.testPredictor(expSales, loader, 200, 50));
+		System.out.println("10 nearest neighbor loss: " + tester.testPredictor(knn, loader));
+		System.out.println("10 nearest neighbor weighted loss: " + tester.testPredictor(knnW, loader));
+		System.out.println("current loss: " + tester.testPredictor(expSales, loader));
 	}
 	
 }

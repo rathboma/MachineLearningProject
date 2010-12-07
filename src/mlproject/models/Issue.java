@@ -5,7 +5,7 @@ import java.util.Date;
 public class Issue{
 	public String mImagePath;
 	
-	public Double sales, expectedSales;
+	public Double sales, expectedSales, difference;
 	public Long Issue;
 	public Date date;
 	public String heading;

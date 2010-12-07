@@ -19,7 +19,7 @@ public class TestResults{
 	 * @param testSize
 	 * @return the average loss for this test run.
 	 */
-	public double testPredictor(ISalesPredictor predictor, DataLoader loader, int trainingSize, int testSize) {
+	public double testPredictor(ISalesPredictor predictor, DataLoader loader) {
 		
 		Collection<Issue> trainingSample = loader.getTrainingData();
 		Collection<Issue> testSample = loader.getTestData();
@@ -31,6 +31,7 @@ public class TestResults{
 			double actualSales = issue.sales;
 			
 			double loss = Math.abs(Math.log(salesPrediction) - Math.log(actualSales));
+			//System.out.println("actual: " + actualSales + " predicted: " + salesPrediction);
 			totalLoss += loss;
 		}
 		
