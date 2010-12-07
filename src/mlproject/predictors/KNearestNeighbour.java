@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import mlproject.abstractMath.Measure;
+import mlproject.abstractMath.Metric;
 import mlproject.abstractMath.NaturalNearestNeighbor;
 import mlproject.abstractMath.NearestNeighborFunction;
 import mlproject.models.Issue;
@@ -23,7 +23,7 @@ public class KNearestNeighbour extends BasePredictor{
 		this.k = k;
 	}
 	
-	public KNearestNeighbour(Measure<Issue> measure, int k) {
+	public KNearestNeighbour(Metric<Issue> measure, int k) {
 		this.nnf = new NaturalNearestNeighbor<Issue>(measure);
 		this.k = k;
 	}

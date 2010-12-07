@@ -7,25 +7,27 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import mlproject.abstractMath.impl.CachedMetric;
+
 /**
  * @author mes592
  * Implements the nearest neighbor class using a measure function on the space
  */
 public class NaturalNearestNeighbor<T> implements NearestNeighborFunction<T> {
 	
-	final Measure<T> measure;
+	final Metric<T> metric;
 	
-	public NaturalNearestNeighbor(Measure<T> measure) {
-		this.measure = measure;
+	public NaturalNearestNeighbor(Metric<T> metric) {
+		this.metric = new CachedMetric<T>(metric);
 	}
-
+	
 	@Override
 	public List<T> nearestNeighbors(int k, final T t, Collection<T> dataSet) {
 		SortedSet<T> sortedDataSet = new TreeSet<T>(new Comparator<T>() {
 			@Override
 			public int compare(T t1, T t2) {
 				// TODO Auto-generated method stub
-				return (measure.distance(t, t1) - measure.distance(t, t2)) > 0? 1: -1;
+				return (metric.distance(t, t1) - metric.distance(t, t2)) > 0? 1: -1;
 			}
 		});
 		

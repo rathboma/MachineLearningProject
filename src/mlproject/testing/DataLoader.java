@@ -48,8 +48,7 @@ public class DataLoader {
 	public void regenerate(){
 		mTestData = new ArrayList<Issue>();
 		mTrainingData = new ArrayList<Issue>();
-		double testPercent = mTestPercent;
-		if(testPercent > 1) testPercent /= 100.0;
+		double testPercent = mTestPercent / 100.0;
 		int total = mAllIssues.size();
 		int testTot =  (int)(total * testPercent);
 		int[] testNums = new int[testTot];
