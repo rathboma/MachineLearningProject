@@ -1,1 +1,10 @@
-Stuff goes here
+
+MAX:
+
+So I was thinking about using the expected sales for training. I think we can't do it.
+
+The reason is that our tests are artificial. We're testing on a random sample, 
+which could be an issue from Jan 2006.
+In our case, the expected sales of those from 2006 are probably relevant, but we're actually going to
+be predicting sales for issues at the end of the slope, in 2010 / 2011. So the expected sales figures
+from issues in 2006 just warps the model.

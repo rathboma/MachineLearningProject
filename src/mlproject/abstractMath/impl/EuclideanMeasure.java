@@ -18,8 +18,8 @@ public class EuclideanMeasure implements Measure<Issue> {
 	public static Double[] toVector(Issue issue) {
 		Double[] v = new Double[15];
 		                        
-		v[0] = (issue.expectedSales == null)? 36041: issue.expectedSales;
-		v[1] = (double) issue.date.getTime();
+		v[0] = 1.0; // (issue.expectedSales == null)? 36041: issue.expectedSales;
+		v[1] = (double) issue.date.getDay();
 		v[2] = toD(issue.astronomyAndCosmology);
 		v[3] = toD(issue.earthScience);
 		v[4] = toD(issue.physics);

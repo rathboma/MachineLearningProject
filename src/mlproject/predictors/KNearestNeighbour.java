@@ -32,12 +32,12 @@ public class KNearestNeighbour extends BasePredictor{
 	public double Predict(Issue issue) {
 		List<Issue> neighbors = nnf.nearestNeighbors(k, issue, issues);
 		
-		double totalSales = 0;
+		double totalPercent = 0;
 		for(Issue neighbor: neighbors) {
-			totalSales += neighbor.sales;
+			totalPercent += neighbor.getPercent();
 		}
 		
-		return totalSales / neighbors.size() ;
+		return totalPercent / neighbors.size() ;
 	}
 
 	@Override

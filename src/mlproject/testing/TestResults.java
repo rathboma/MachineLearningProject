@@ -26,14 +26,16 @@ public class TestResults{
 		predictor.Train(trainingSample);
 		
 		double totalLoss = 0;
+		int correctDirection = 0;
 		for(Issue issue: testSample) {
-			double salesPrediction = predictor.Predict(issue);
-			double actualSales = issue.sales;
-			
-			double loss = Math.abs(Math.log(salesPrediction) - Math.log(actualSales));
-			System.out.println("estimated " + issue.expectedSales + " actual: " + actualSales + " predicted: " + salesPrediction);
+			double percentPrediction = predictor.Predict(issue);
+			double actualPercent = issue.getPercent();
+			if((1 - percentPrediction)* (1- actualPercent) >= 0) correctDirection++;
+			double loss = Math.abs(Math.log(percentPrediction) - Math.log(actualPercent));
+			System.out.println("actual percent " + issue.getPercent() + " predicted: " + percentPrediction);
 			totalLoss += loss;
 		}
+		System.out.println("PREDICTION DIRECTION SUCCESS: " + correctDirection + " / " + testSample.size());
 		
 		double averageLoss = totalLoss/testSample.size();
 		return averageLoss;

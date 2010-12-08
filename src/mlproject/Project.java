@@ -18,8 +18,8 @@ public class Project {
 	public static void main(String[] args){		
 		Collection<Issue> issues = null;
 		try {
-			//issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
-			issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
+			issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
+			//issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
 			
 			for(Issue issue: issues) {
 				System.out.println(issue.Issue);
