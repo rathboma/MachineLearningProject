@@ -1,6 +1,7 @@
 package mlproject.dataimport;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,10 +11,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-
-import au.com.bytecode.opencsv.CSVParser;
+import java.util.HashMap;
 
 import mlproject.models.Issue;
+import au.com.bytecode.opencsv.CSVParser;
 
 public class Importer {
 
@@ -105,12 +106,8 @@ public class Importer {
 		if (type == String.class) 
 			return (T) str;
 		if (type == Date.class) {
-			try {
-				return (T) (new SimpleDateFormat("M/d/yyyy")).parse(str);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			//simple date parser doesn't work well when year is 2 numbers, which it was. Regular date parser works better.
+			return (T) (new Date(Date.parse(str)));
 		}
 		
 		throw new RuntimeException("Unknown type: " + type);
@@ -123,5 +120,38 @@ public class Importer {
 			if (f.getType().isEnum()) System.out.println("Is enum");
 		}
 	}
+
+	public static File[] getImages(String string) {
+		File folder = new File(string);
+		return folder.listFiles();
+		
+	}
+	
+	public static HashMap<File, Date> extractIssueDates(File[] files){
+		
+		HashMap<File, Date> map = new HashMap<File, Date>();
+		for(File file : files){
+			map.put(file, getDate(file.getName()));
+		}
+		return map;
+	}
+	
+	private static Date getDate(String filename){
+		String[] split1 = filename.split("-");
+		Date d;
+		if(split1.length > 1){
+			d = new Date(Date.parse(split1[1] + "/" + split1[2] + "/" + split1[3]));
+			
+		} else{
+			split1 = filename.split("_");
+			String[] secondLevel = split1[1].split("(?<=\\G..)");
+			d = new Date(Date.parse(secondLevel[1] + "/" + secondLevel[0] + "/" + secondLevel[2]));
+		}
+		//System.out.println(d.toGMTString() + " from " + filename);
+		return d;
+		
+	}
+	
+	
 	
 }

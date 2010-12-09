@@ -16,7 +16,7 @@ public class EuclideanMetric implements Metric<Issue> {
 	}
 	
 	public static Double[] toVector(Issue issue) {
-		Double[] v = new Double[15];
+		Double[] v = new Double[18];
 		                        
 		v[0] = (issue.expectedSales == null)? 36041: issue.expectedSales;
 		v[1] = (double) issue.date.getTime();
@@ -33,6 +33,9 @@ public class EuclideanMetric implements Metric<Issue> {
 		v[12] = toD(issue.hasSpecial);
 		v[13] = toD(issue.isSpecialEdition);
 		v[14] = toD(issue.isAnniverseryEdition);
+		v[15] = issue.avgRed;
+		v[16] = issue.avgBlue;
+		v[17] = issue.avgGreen;
 		
 		return v;
 	}

@@ -1,15 +1,19 @@
 package mlproject;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 
-import mlproject.abstractMath.impl.CachedMetric;
 import mlproject.abstractMath.impl.EuclideanMetric;
 import mlproject.abstractMath.impl.EuclideanMetricWeighted;
 import mlproject.dataimport.Importer;
-import mlproject.models.*;
-import mlproject.predictors.*;
-import mlproject.testing.*;
+import mlproject.models.Issue;
+import mlproject.predictors.ExpectedSalesPredictor;
+import mlproject.predictors.KNearestNeighbour;
+import mlproject.testing.DataLoader;
+import mlproject.testing.TestResults;
 
 
 
@@ -18,16 +22,34 @@ public class Project {
 	public static void main(String[] args){		
 		Collection<Issue> issues = null;
 		try {
+			System.out.println("Loading issues from csv....");
 			issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
 			//issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
-			
+			File[] images = Importer.getImages("/Users/matthew/Pictures/cover_images/");
+			HashMap<File, Date> dateMappings = Importer.extractIssueDates(images);
+			System.out.println("Extracting image features...");
 			for(Issue issue: issues) {
-				System.out.println(issue.Issue);
-				System.out.println(issue.date);
-				System.out.println(issue.heading);
-				System.out.println(issue.astronomyAndCosmology? "*****************": "Not astonomy");
-				System.out.println("");
+				System.out.print(".");
+				for(File image : images){
+					if(issue.shouldOwn(dateMappings.get(image))){
+						try{
+							issue.extractImageFeatures(image.getAbsolutePath());
+							//System.out.println("RGB avg: " + issue.avgRed + " " + issue.avgGreen + " " + issue.avgBlue);
+						}catch(IOException e){
+							System.err.println("Unable to load data from " + image.getName() + " for issue " + issue.Issue );
+						}
+						break;
+					}
+					
+				}
+				
+//				System.out.println(issue.Issue);
+//				System.out.println(issue.date.toGMTString());
+//				System.out.println(issue.heading);
+//				System.out.println(issue.astronomyAndCosmology? "*****************": "Not astonomy");
+//				System.out.println("");
 			}
+			System.out.println();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
