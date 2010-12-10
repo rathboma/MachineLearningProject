@@ -2,12 +2,14 @@ package mlproject;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 
 import mlproject.abstractMath.impl.EuclideanMetric;
-import mlproject.abstractMath.impl.EuclideanMetricWeighted;
+import mlproject.abstractMath.impl.NaiveVectorMaker;
+import mlproject.abstractMath.impl.WeightedVectorMaker;
 import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
@@ -19,13 +21,20 @@ import mlproject.testing.TestResults;
 
 public class Project {
 	
-	public static void main(String[] args){		
+	public static void main(String[] args){	
+		//for(Field f: Issue.class.getDeclaredFields())
+		//System.out.println(Issue.class.getDeclaredFields().length);
+		
 		Collection<Issue> issues = null;
 		try {
 			System.out.println("Loading issues from csv....");
-			issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
-			//issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
-			File[] images = Importer.getImages("/Users/matthew/Pictures/cover_images/");
+			
+			//issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
+			//File[] images = Importer.getImages("/Users/matthew/Pictures/cover_images/");
+
+			issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
+			File[] images = Importer.getImages("/home/mes592/images/cover_images/");
+
 			HashMap<File, Date> dateMappings = Importer.extractIssueDates(images);
 			System.out.println("Extracting image features...");
 			for(Issue issue: issues) {
@@ -61,8 +70,8 @@ public class Project {
 //		System.out.println("# of test issues: " + loader.getTestData().size());
 //		System.out.println("# of training issues: " + loader.getTrainingData().size());
 //		
-		KNearestNeighbour knn = new KNearestNeighbour(new EuclideanMetric(), 10); 
-		KNearestNeighbour knnW = new KNearestNeighbour(new EuclideanMetricWeighted(), 10);
+		KNearestNeighbour knn = new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10); 
+		KNearestNeighbour knnW = new KNearestNeighbour(new EuclideanMetric(new WeightedVectorMaker()), 10);
 		ExpectedSalesPredictor expSales = new ExpectedSalesPredictor();
 		
 		
