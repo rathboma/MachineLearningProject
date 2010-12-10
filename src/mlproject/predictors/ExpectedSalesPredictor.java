@@ -8,7 +8,8 @@ public class ExpectedSalesPredictor extends BasePredictor {
 
 	@Override
 	public double Predict(Issue issue) {
-		return (issue.expectedSales == null)? 36041: issue.expectedSales;
+		return 1;
+		//return (issue.expectedSales == null)? 36041: issue.expectedSales;
 	}
 
 	@Override

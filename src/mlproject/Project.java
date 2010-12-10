@@ -29,11 +29,11 @@ public class Project {
 		try {
 			System.out.println("Loading issues from csv....");
 			
-			//issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
-			//File[] images = Importer.getImages("/Users/matthew/Pictures/cover_images/");
+			issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
+			File[] images = Importer.getImages("/Users/matthew/Pictures/cover_images/");
 
-			issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
-			File[] images = Importer.getImages("/home/mes592/images/cover_images/");
+			//issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
+			//File[] images = Importer.getImages("/home/mes592/images/cover_images/");
 
 			HashMap<File, Date> dateMappings = Importer.extractIssueDates(images);
 			System.out.println("Extracting image features...");
