@@ -3,9 +3,11 @@ package mlproject;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import mlproject.abstractMath.impl.EuclideanMetric;
 import mlproject.abstractMath.impl.NaiveVectorMaker;
@@ -14,6 +16,7 @@ import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.KNearestNeighbour;
+import mlproject.predictors.LogisticRegressionPredictor;
 import mlproject.testing.DataLoader;
 import mlproject.testing.TestResults;
 
@@ -21,10 +24,7 @@ import mlproject.testing.TestResults;
 
 public class Project {
 	
-	public static void main(String[] args){	
-		//for(Field f: Issue.class.getDeclaredFields())
-		//System.out.println(Issue.class.getDeclaredFields().length);
-		
+	public static void main(String[] args){		
 		Collection<Issue> issues = null;
 		try {
 			System.out.println("Loading issues from csv....");
@@ -70,16 +70,19 @@ public class Project {
 //		System.out.println("# of test issues: " + loader.getTestData().size());
 //		System.out.println("# of training issues: " + loader.getTrainingData().size());
 //		
-		KNearestNeighbour knn = new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10); 
-		KNearestNeighbour knnW = new KNearestNeighbour(new EuclideanMetric(new WeightedVectorMaker()), 10);
-		ExpectedSalesPredictor expSales = new ExpectedSalesPredictor();
+		List<ISalesPredictor> predictors = new ArrayList<ISalesPredictor>();
 		
+		predictors.add(new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10)); 
+		predictors.add(new KNearestNeighbour(new EuclideanMetric(new WeightedVectorMaker()), 10));
+		predictors.add(new ExpectedSalesPredictor());
+		predictors.add(new LogisticRegressionPredictor());
 		
 		
 		TestResults tester = new TestResults();
-		System.out.println("10 nearest neighbor loss: " + tester.testPredictor(knn, loader));
-		System.out.println("10 nearest neighbor weighted loss: " + tester.testPredictor(knnW, loader));
-		System.out.println("current loss: " + tester.testPredictor(expSales, loader));
+		
+		for(ISalesPredictor predictor: predictors) {
+			System.out.println(predictor.name() + ": " + tester.testPredictor(predictor, loader));
+		}
 	}
 	
 }

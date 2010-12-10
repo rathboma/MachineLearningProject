@@ -3,16 +3,16 @@ package mlproject.models;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.util.Date;
 
 import javax.imageio.ImageIO;
 
 public class Issue{
-	public String mImagePath;
+	@IgnoreField public String mImagePath;
 	public boolean imageAttached;
 	
-	public Double sales, expectedSales;
+	@TargetField public Double sales;
+	public Double expectedSales;
 	public Long Issue;
 	public Date date;
 	public String heading;

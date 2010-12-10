@@ -8,10 +8,15 @@ public class ExpectedSalesPredictor extends BasePredictor {
 
 	@Override
 	public double Predict(Issue issue) {
-		return (issue.expectedSales == null)? 36041: issue.expectedSales;
+		return 1;
 	}
 
 	@Override
 	public void Train(Collection<Issue> issues) {}
+
+	@Override
+	public String name() {
+		return "Expected Sales Predictor";
+	}
 
 }

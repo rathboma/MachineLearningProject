@@ -44,6 +44,11 @@ public class KNearestNeighbour extends BasePredictor{
 	public void Train(Collection<Issue> issues) {
 		this.issues = issues;
 	}
+
+	@Override
+	public String name() {
+		return "K Nearest Neighbor";
+	}
 	
 	
 }
