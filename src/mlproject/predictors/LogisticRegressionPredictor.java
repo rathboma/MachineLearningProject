@@ -61,8 +61,10 @@ public class LogisticRegressionPredictor extends BasePredictor {
 			instance.setDataset(instances);
 		}
 		
+		
 		logistic = new Logistic();
 		try {
+			
 			logistic.buildClassifier(instances);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -78,10 +80,11 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	public Instance getWekaInstance(Issue issue) {
 		Field[] fs = Issue.class.getFields();
 		Instance instance = new Instance(fs.length);
+		System.out.println("NUMBER OF ATTRIBUTES " + instance.numAttributes());
 		for(int i = 0; i < fs.length; i++) {
 			if (fs[i].isAnnotationPresent(IgnoreField.class)) continue;
 			try {
-				instance.setValue((Attribute)attributes.elementAt(i), Utils.toDouble(fs[i].get(issue)));
+				instance.setValue(i, Utils.toDouble(fs[i].get(issue)));
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 				throw new RuntimeException(e);

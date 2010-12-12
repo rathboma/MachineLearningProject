@@ -11,11 +11,12 @@ public class Issue{
 	@IgnoreField public String mImagePath;
 	public boolean imageAttached;
 	
-	@TargetField public Double sales;
+	public Double sales;
 	public Double expectedSales;
 	public Long Issue;
 	public Date date;
 	public String heading;
+	@TargetField public Boolean aboveExpected;
 	public Boolean earthScience, astronomyAndCosmology, physics, technology, neuroSciencePsychology;
 	public Boolean otherBiology, otherTopic, abstractImage, photoImage, typographicImage;
 	public Boolean hasSpecial, isSpecialEdition, isAnniverseryEdition;

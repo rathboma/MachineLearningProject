@@ -67,7 +67,7 @@ public class Importer {
 		for(int i = 0; i < titles.length; i++){
 			Importer.importField(titles[i], issue, data[i]);
 		}
-		
+		issue.aboveExpected = issue.sales > issue.expectedSales;
 		return issue;
 	}
 	
