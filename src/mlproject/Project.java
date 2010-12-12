@@ -16,6 +16,7 @@ import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.KNearestNeighbour;
+import mlproject.predictors.LinearRegressionPredictor;
 import mlproject.predictors.LogisticRegressionPredictor;
 import mlproject.testing.DataLoader;
 import mlproject.testing.TestResults;
@@ -77,10 +78,10 @@ public class Project {
 //		
 		List<ISalesPredictor> predictors = new ArrayList<ISalesPredictor>();
 		
-		predictors.add(new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10)); 
-		predictors.add(new KNearestNeighbour(new EuclideanMetric(new WeightedVectorMaker()), 10));
-		predictors.add(new ExpectedSalesPredictor());
-		predictors.add(new LogisticRegressionPredictor());
+		//predictors.add(new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10)); 
+		//predictors.add(new KNearestNeighbour(new EuclideanMetric(new WeightedVectorMaker()), 10));
+		//predictors.add(new ExpectedSalesPredictor());
+		predictors.add(new LinearRegressionPredictor(new WeightedVectorMaker()));
 		
 		
 		TestResults tester = new TestResults();

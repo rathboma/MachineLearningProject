@@ -32,4 +32,9 @@ public class WeightedVectorMaker implements VectorMaker<Issue> {
 		return v;
 	}
 
+	@Override
+	public int vectorSize() {
+		return 18;
+	}
+
 }
