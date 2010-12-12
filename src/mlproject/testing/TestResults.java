@@ -30,7 +30,9 @@ public class TestResults{
 		for(Issue issue: testSample) {
 			double percentPrediction = predictor.Predict(issue);
 			double actualPercent = issue.getPercent();
-			if((1 - percentPrediction)* (1- actualPercent) >= 0) correctDirection++;
+			//let it treat 1.0 as a positive prediction I guess.
+			percentPrediction = percentPrediction == 1.00 ? 1.0001 : percentPrediction;
+			if(Math.signum(1- percentPrediction) == Math.signum(1 - actualPercent)) correctDirection++;
 			double loss = Math.abs(Math.log(percentPrediction) - Math.log(actualPercent));
 			System.out.println("actual percent " + issue.getPercent() + " predicted: " + percentPrediction);
 			totalLoss += loss;
