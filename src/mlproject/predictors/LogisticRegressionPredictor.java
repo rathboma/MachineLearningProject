@@ -30,7 +30,10 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	@Override
 	public double Predict(Issue issue) {
 		try {
-			return logistic.classifyInstance(getWekaInstance(issue));
+			Field[] fs = Issue.class.getFields();
+			Instance instance = new Instance(fs.length);
+			getWekaInstance(instance, issue);
+			return logistic.classifyInstance(instance);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -60,17 +63,19 @@ public class LogisticRegressionPredictor extends BasePredictor {
 		FastVector fv = new FastVector(fs.length);
 		int classIndex = 0;
 		for(int i = 0; i < fs.length; i++) {
-			if (fs[i].isAnnotationPresent(TargetField.class)) classIndex = i;
+			if (fs[i].getName().equalsIgnoreCase("aboveExpected")) classIndex = i;
 			fv.addElement(new Attribute(fs[i].getName()));
 		}
-		
+		System.out.println("CLASS ATTRIBUTE: " + fs[classIndex].getName());
 		Instances instances = new Instances("Issue", fv, 300);
 		instances.setClassIndex(classIndex);
 		
 		for(Issue issue: issues) {
-			Instance instance = getWekaInstance(issue);
-			instances.add(instance);
+			Instance instance = new Instance(fs.length);
 			instance.setDataset(instances);
+			getWekaInstance(instance, issue);
+			instances.add(instance);
+			
 		}
 		
 		
@@ -89,16 +94,20 @@ public class LogisticRegressionPredictor extends BasePredictor {
 		return "Logistic Regression Predictor";
 	}
 	
-	public Instance getWekaInstance(Issue issue) {
+	public void getWekaInstance(Instance instance, Issue issue) {
 		Field[] fs = Issue.class.getFields();
-		Instance instance = new Instance(fs.length);
+		
 		System.out.println("NUMBER OF ATTRIBUTES " + instance.numAttributes());
 		for(int i = 0; i < fs.length; i++) {
 			if (fs[i].isAnnotationPresent(IgnoreField.class)) continue;
 			try {
 				//Attribute attribute = (Attribute)attributes.elementAt(i);
 				Field field = fs[i];
-				instance.setValue(i , Utils.toDouble(field.get(issue)));
+				if (fs[i].getName().equalsIgnoreCase("aboveExpected")){
+					instance.setValue(i, String.valueOf(field.get(issue)));
+				} else{
+					instance.setValue(i , Utils.toDouble(field.get(issue)));
+				}
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 				throw new RuntimeException(e);
@@ -107,8 +116,6 @@ public class LogisticRegressionPredictor extends BasePredictor {
 				throw new RuntimeException(e);
 			}
 		}
-		
-		return instance;
 	}
 
 }
