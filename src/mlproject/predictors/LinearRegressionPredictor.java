@@ -90,7 +90,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 
 	@Override
 	public String name() {
-		return "Linear Regression Predictor";
+		return "Linear Regression Predictor\n Vector Maker: " + vectorMaker.name();
 	}
 	
 	public Instance getWekaInstance(Issue issue) {

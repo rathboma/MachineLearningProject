@@ -37,4 +37,9 @@ public class NaiveVectorMaker implements VectorMaker<Issue> {
 		return 18;
 	}
 
+	@Override
+	public String name() {
+		return "NaiveVectorMaker";
+	}
+
 }

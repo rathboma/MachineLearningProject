@@ -2,23 +2,25 @@ package mlproject;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import mlproject.abstractMath.VectorMaker;
 import mlproject.abstractMath.impl.EuclideanMetric;
 import mlproject.abstractMath.impl.NaiveVectorMaker;
+import mlproject.abstractMath.impl.PolynomialVectorMaker;
 import mlproject.abstractMath.impl.WeightedVectorMaker;
 import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.KNearestNeighbour;
 import mlproject.predictors.LinearRegressionPredictor;
-import mlproject.predictors.LogisticRegressionPredictor;
 import mlproject.testing.DataLoader;
+import mlproject.testing.PredictorTester;
 import mlproject.testing.TestResults;
 
 
@@ -78,17 +80,29 @@ public class Project {
 //		
 		List<ISalesPredictor> predictors = new ArrayList<ISalesPredictor>();
 		
-		//predictors.add(new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10)); 
-		//predictors.add(new KNearestNeighbour(new EuclideanMetric(new WeightedVectorMaker()), 10));
-		//predictors.add(new ExpectedSalesPredictor());
-		predictors.add(new LinearRegressionPredictor(new WeightedVectorMaker()));
+		VectorMaker<Issue> weighted = new WeightedVectorMaker();
+		VectorMaker<Issue> quadWeighted = new PolynomialVectorMaker<Issue>(2, weighted);
+		
+		predictors.add(new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10)); 
+		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 10));
+		predictors.add(new ExpectedSalesPredictor());
+		predictors.add(new LinearRegressionPredictor(weighted));
+		predictors.add(new LinearRegressionPredictor(quadWeighted));
 		
 		
-		TestResults tester = new TestResults();
+		PredictorTester tester = new PredictorTester();
 		
+		Map<ISalesPredictor, TestResults> results = new HashMap<ISalesPredictor, TestResults>();
 		for(ISalesPredictor predictor: predictors) {
-			System.out.println(predictor.name() + ": " + tester.testPredictor(predictor, loader));
+			results.put(predictor, tester.testPredictor(predictor, loader));
 		}
+
+		for(ISalesPredictor predictor: predictors) {
+			TestResults thisResult = results.get(predictor);
+			System.out.println(predictor.name() + ": Average Loss = " + thisResult.averageLoss);
+			System.out.println("PREDICTION DIRECTION SUCCESS: " + thisResult.numCorrectDirection + " / " + thisResult.totalChecked);
+		}
+
 	}
 	
 }
