@@ -23,7 +23,6 @@ public class Issue{
 	
 	public Double avgRed = 0.0, avgGreen = 0.0, avgBlue = 0.0;
 	
-	
 	public double getPercent(){
 		if(sales != null && expectedSales != null) return sales / expectedSales;
 		return 1;
