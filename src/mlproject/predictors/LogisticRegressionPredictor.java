@@ -14,6 +14,7 @@ import mlproject.Utils;
 import mlproject.models.IgnoreField;
 import mlproject.models.Issue;
 //import mlproject.models.TargetField;
+import mlproject.models.TargetField;
 
 public class LogisticRegressionPredictor extends BasePredictor {
 
@@ -36,7 +37,12 @@ public class LogisticRegressionPredictor extends BasePredictor {
 		}
 	}
 
-	public static void main(String[] args) {		
+	public static void main(String[] args) {
+		Field[] fs = Issue.class.getFields();
+		for(int i = 0; i < fs.length; i++) {
+			System.out.println(fs[i].getName());
+		}
+		
 		LogisticRegressionPredictor p = new LogisticRegressionPredictor();
 		System.out.println("size: " + p.attributes.size());
 		Instances instances = new Instances("Issue", p.attributes, 300);
@@ -52,8 +58,14 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	public void Train(Collection<Issue> issues) {
 		Field[] fs = Issue.class.getFields();
 		FastVector fv = new FastVector(fs.length);
-		for(int i = 0; i < fs.length; i++) fv.addElement(new Attribute(fs[i].getName()));
+		int classIndex = 0;
+		for(int i = 0; i < fs.length; i++) {
+			if (fs[i].isAnnotationPresent(TargetField.class)) classIndex = i;
+			fv.addElement(new Attribute(fs[i].getName()));
+		}
+		
 		Instances instances = new Instances("Issue", fv, 300);
+		instances.setClassIndex(classIndex);
 		
 		for(Issue issue: issues) {
 			Instance instance = getWekaInstance(issue);
@@ -81,7 +93,9 @@ public class LogisticRegressionPredictor extends BasePredictor {
 		for(int i = 0; i < fs.length; i++) {
 			if (fs[i].isAnnotationPresent(IgnoreField.class)) continue;
 			try {
-				instance.setValue((Attribute)attributes.elementAt(i), Utils.toDouble(fs[i].get(issue)));
+				//Attribute attribute = (Attribute)attributes.elementAt(i);
+				Field field = fs[i];
+				instance.setValue(i , Utils.toDouble(field.get(issue)));
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 				throw new RuntimeException(e);
