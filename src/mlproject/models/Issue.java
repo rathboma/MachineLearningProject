@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-
+import java.lang.reflect.Field;
 import javax.imageio.ImageIO;
 
 public class Issue{
@@ -16,12 +16,21 @@ public class Issue{
 	public Long Issue;
 	public Date date;
 	public String heading;
-	@TargetField public Boolean aboveExpected;
+	public Boolean aboveExpected;
 	public Boolean earthScience, astronomyAndCosmology, physics, technology, neuroSciencePsychology;
 	public Boolean otherBiology, otherTopic, abstractImage, photoImage, typographicImage;
 	public Boolean hasSpecial, isSpecialEdition, isAnniverseryEdition;
-	
 	public Double avgRed = 0.0, avgGreen = 0.0, avgBlue = 0.0;
+	public String[] fields;
+	public double[] data;
+	public Issue(String[] flds, String[] dta, String toPredict){
+		fields = flds.clone();
+		this.data = new double[dta.length];
+		for(int i = 0; i < dta.length; i++){
+			data[i] = Double.valueOf(dta[i]).doubleValue();
+		}
+	}
+	
 	
 	public double getPercent(){
 		if(sales != null && expectedSales != null) return sales / expectedSales;
