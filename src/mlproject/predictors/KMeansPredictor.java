@@ -1,5 +1,6 @@
 package mlproject.predictors;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
@@ -32,12 +33,14 @@ public class KMeansPredictor extends BasePredictor {
 	// Initializes the prototype array to the first k elements of the issues array
 	private Double[][] initializePrototypes(Double[][] issues, int num){
 		if(issues.length < num ) return null;
-		
+		ArrayList<Integer> alreadyFound = new ArrayList<Integer>();
 		Double[][] results = new Double[num][issues[0].length];
 		for(int i = 0; i < num; i++){
 			Random r = new Random();
-			int issueNum = Math.abs(r.nextInt()) % issues.length;
-			
+			int issueNum = -1;
+			while(issueNum == -1 || alreadyFound.contains(issueNum)) 
+				issueNum = Math.abs(r.nextInt()) % issues.length;
+			alreadyFound.add(issueNum);
 			for(int j = 0; j < issues[i].length; j++ ){
 				results[i][j] = new Double(issues[issueNum][j].doubleValue());
 			}
