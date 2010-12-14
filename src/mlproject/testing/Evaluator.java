@@ -12,7 +12,7 @@ public class Evaluator{
 		
 	}
 	
-	public TestResults evaluate(ISalesPredictor predictor){
+	public PredictorTester evaluate(ISalesPredictor predictor){
 		return null;
 		
 	}

@@ -8,9 +8,9 @@ public class WeightedVectorMaker implements VectorMaker<Issue> {
 	
 	@Override
 	public Double[] toVector(Issue issue) {
-		Double[] v = new Double[18];
+		Double[] v = new Double[vectorSize()];
         
-		v[0] = (issue.expectedSales == null)? 36041: issue.expectedSales;
+		/*v[0] = (issue.expectedSales == null)? 36041: issue.expectedSales;
 		v[1] = (double) issue.date.getTime();
 		v[2] = Utils.toDouble(issue.astronomyAndCosmology);
 		v[3] = Utils.toDouble(issue.earthScience);
@@ -27,9 +27,25 @@ public class WeightedVectorMaker implements VectorMaker<Issue> {
 		v[14] = Utils.toDouble(issue.isAnniverseryEdition);
 		v[15] = issue.avgRed;
 		v[16] = issue.avgBlue;
-		v[17] = issue.avgGreen;
+		v[17] = issue.avgGreen;*/
+
+		v[0] = issue.avgRed;
+		v[1] = issue.avgBlue;
+		v[2] = issue.avgGreen;
+		v[3] = Utils.toDouble(issue.photoImage);
 		
 		return v;
+	}
+
+	@Override
+	public int vectorSize() {
+		//return 18;
+		return 4;
+	}
+
+	@Override
+	public String name() {
+		return "Weighted";
 	}
 
 }

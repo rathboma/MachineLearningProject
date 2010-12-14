@@ -37,7 +37,10 @@ public class Importer {
 			String imagePath = null;
 			
 			try {
-				issues.add(makeIssue(csvFields, csvValues, imagePath));
+				Issue newIssue = makeIssue(csvFields, csvValues, imagePath);
+				if (newIssue.expectedSales != null) {
+					issues.add(makeIssue(csvFields, csvValues, imagePath));
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -67,7 +70,7 @@ public class Importer {
 		for(int i = 0; i < titles.length; i++){
 			Importer.importField(titles[i], issue, data[i]);
 		}
-		issue.aboveExpected = issue.sales > issue.expectedSales;
+		
 		return issue;
 	}
 	
