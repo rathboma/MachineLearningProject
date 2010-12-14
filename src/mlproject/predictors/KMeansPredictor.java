@@ -1,12 +1,10 @@
 package mlproject.predictors;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Random;
 
 import mlproject.abstractMath.DoubleVectorUtils;
 import mlproject.abstractMath.VectorMaker;
-import mlproject.abstractMath.impl.WeightedVectorMaker;
 import mlproject.models.Issue;
 
 public class KMeansPredictor extends BasePredictor {
@@ -37,9 +35,11 @@ public class KMeansPredictor extends BasePredictor {
 		
 		Double[][] results = new Double[num][issues[0].length];
 		for(int i = 0; i < num; i++){
+			Random r = new Random();
+			int issueNum = Math.abs(r.nextInt()) % issues.length;
 			
 			for(int j = 0; j < issues[i].length; j++ ){
-				results[i][j] = new Double(issues[i][j].doubleValue());
+				results[i][j] = new Double(issues[issueNum][j].doubleValue());
 			}
 		}
 		return results;
@@ -128,7 +128,6 @@ public class KMeansPredictor extends BasePredictor {
 				closestValue = distance;
 			}
 		}
-		System.out.println("prediction using prototype " + closest);
 		// TODO Auto-generated method stub
 		return prototypePredictions[closest];
 	}
