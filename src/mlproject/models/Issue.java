@@ -21,15 +21,8 @@ public class Issue{
 	public Boolean otherBiology, otherTopic, abstractImage, photoImage, typographicImage;
 	public Boolean hasSpecial, isSpecialEdition, isAnniverseryEdition;
 	public Double avgRed = 0.0, avgGreen = 0.0, avgBlue = 0.0;
-	public String[] fields;
-	public double[] data;
-	public Issue(String[] flds, String[] dta, String toPredict){
-		fields = flds.clone();
-		this.data = new double[dta.length];
-		for(int i = 0; i < dta.length; i++){
-			data[i] = Double.valueOf(dta[i]).doubleValue();
-		}
-	}
+	
+	
 	
 	
 	public double getPercent(){

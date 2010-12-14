@@ -17,6 +17,7 @@ import mlproject.abstractMath.impl.WeightedVectorMaker;
 import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
+import mlproject.predictors.KMeansPredictor;
 import mlproject.predictors.KNearestNeighbour;
 import mlproject.predictors.LinearRegressionPredictor;
 import mlproject.testing.DataLoader;
@@ -34,7 +35,7 @@ public class Project {
 			
 			File[] images = null;
 			
-			File testEnv = new File("/home/matthew/");
+			File testEnv = new File("/Users/matthew/");
 			if (testEnv.exists()) {
 				issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
 				images = Importer.getImages("/Users/matthew/Pictures/cover_images/");
@@ -83,12 +84,14 @@ public class Project {
 		VectorMaker<Issue> weighted = new WeightedVectorMaker();
 		VectorMaker<Issue> quadWeighted = new PolynomialVectorMaker<Issue>(2, weighted);
 		
-		predictors.add(new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10)); 
-		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 10));
-		predictors.add(new ExpectedSalesPredictor());
-		predictors.add(new LinearRegressionPredictor(weighted));
-		predictors.add(new LinearRegressionPredictor(quadWeighted));
+		predictors.add(new KMeansPredictor(3, weighted));
 		
+//		predictors.add(new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10)); 
+//		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 10));
+//		predictors.add(new ExpectedSalesPredictor());
+//		predictors.add(new LinearRegressionPredictor(weighted));
+//		predictors.add(new LinearRegressionPredictor(quadWeighted));
+//		
 		
 		PredictorTester tester = new PredictorTester();
 		
