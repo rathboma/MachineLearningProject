@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.lang.reflect.Field;
 import javax.imageio.ImageIO;
 
 public class Issue{
@@ -24,8 +23,11 @@ public class Issue{
 	
 	
 	
+	public double getLogPercent() {
+		return Math.log(getPercent());
+	}
 	
-	public double getPercent(){
+	private double getPercent(){
 		if(sales != null && expectedSales != null) return sales / expectedSales;
 		return 1;
 	}

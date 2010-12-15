@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +22,10 @@ import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.KMeansPredictor;
 import mlproject.predictors.KNearestNeighbour;
 import mlproject.predictors.LinearRegressionPredictor;
+import mlproject.testing.BatchPredictionResults;
 import mlproject.testing.DataLoader;
+import mlproject.testing.DataSetType;
 import mlproject.testing.PredictorTester;
-import mlproject.testing.TestResults;
-
-
 
 public class Project {
 	
@@ -85,27 +86,59 @@ public class Project {
 		VectorMaker<Issue> quadWeighted = new PolynomialVectorMaker<Issue>(2, weighted);
 		
 		predictors.add(new KMeansPredictor(3, weighted));
-		
-//		predictors.add(new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10)); 
-//		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 10));
-//		predictors.add(new ExpectedSalesPredictor());
-//		predictors.add(new LinearRegressionPredictor(weighted));
-//		predictors.add(new LinearRegressionPredictor(quadWeighted));
-//		
+		predictors.add(new KMeansPredictor(5, weighted));
+		predictors.add(new KMeansPredictor(10, weighted));
+		predictors.add(new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10)); 
+		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 10));
+		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 3));
+		predictors.add(new ExpectedSalesPredictor());
+		predictors.add(new LinearRegressionPredictor(weighted));
+		predictors.add(new LinearRegressionPredictor(quadWeighted));
 		
 		PredictorTester tester = new PredictorTester();
 		
-		Map<ISalesPredictor, TestResults> results = new HashMap<ISalesPredictor, TestResults>();
+		final Map<ISalesPredictor, Map<DataSetType, BatchPredictionResults>> results = 
+			new HashMap<ISalesPredictor, Map<DataSetType, BatchPredictionResults>>();
+		
 		for(ISalesPredictor predictor: predictors) {
 			results.put(predictor, tester.testPredictor(predictor, loader));
 		}
 
+		//Print out the results.
 		for(ISalesPredictor predictor: predictors) {
-			TestResults thisResult = results.get(predictor);
-			System.out.println(predictor.name() + ": Average Loss = " + thisResult.averageLoss);
-			System.out.println("PREDICTION DIRECTION SUCCESS: " + thisResult.numCorrectDirection + " / " + thisResult.totalChecked);
+			Map<DataSetType, BatchPredictionResults> thisResult = results.get(predictor);
+			System.out.println(predictor.name());
+			for(DataSetType dst: thisResult.keySet()) {
+				System.out.println(dst.toString() + " data: ");
+				System.out.println(" - Average Loss = " + thisResult.get(dst).averageLoss);
+				System.out.println(" - Direction Success: " + thisResult.get(dst).numCorrectDirection + " / " + thisResult.get(dst).totalChecked);
+			}
+			System.out.println("");
 		}
 
+		Collections.sort(predictors, new Comparator<ISalesPredictor>() {
+			@Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
+				double l1 = results.get(p1).get(DataSetType.TEST).averageLoss;
+				double l2 = results.get(p2).get(DataSetType.TEST).averageLoss;
+				return Utils.sign(l1 - l2);
+			}
+		});
+	
+		System.out.println("Predictors in Order of Average Loss");
+		for(ISalesPredictor predictor: predictors) System.out.println(predictor.name());
+		System.out.println("");
+		
+		Collections.sort(predictors, new Comparator<ISalesPredictor>() {
+			@Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
+				double l1 = results.get(p1).get(DataSetType.TEST).directionalSuccessRate();
+				double l2 = results.get(p2).get(DataSetType.TEST).directionalSuccessRate();
+				return Utils.sign(l1 - l2);
+			}
+		});
+		
+		System.out.println("Predictors in Order of Directional Success");
+		for(ISalesPredictor predictor: predictors) System.out.println(predictor.name());
+		System.out.println("");
 	}
 	
 }

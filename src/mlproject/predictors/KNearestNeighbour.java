@@ -34,7 +34,7 @@ public class KNearestNeighbour extends BasePredictor{
 		
 		double totalPercent = 0;
 		for(Issue neighbor: neighbors) {
-			totalPercent += neighbor.getPercent();
+			totalPercent += neighbor.getLogPercent();
 		}
 		
 		return totalPercent / neighbors.size() ;
@@ -47,7 +47,7 @@ public class KNearestNeighbour extends BasePredictor{
 
 	@Override
 	public String name() {
-		return "K Nearest Neighbor";
+		return "K-Nearest-Neighbor, K = " + k;
 	}
 	
 	

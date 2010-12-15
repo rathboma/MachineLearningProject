@@ -16,7 +16,7 @@ public class KMeansPredictor extends BasePredictor {
 	Double[] prototypePredictions;
 	VectorMaker<Issue> vectorMaker;
 	
-	public KMeansPredictor(int k, VectorMaker maker){
+	public KMeansPredictor(int k, VectorMaker<Issue> maker){
 		this.k = k;
 		this.vectorMaker = maker;
 	}
@@ -58,7 +58,7 @@ public class KMeansPredictor extends BasePredictor {
 				if(respon == 1.0) {
 					Double[] issue = issues[j];
 					prototypes[i] = DoubleVectorUtils.add(prototypes[i], issue);
-					prototypePredictions[i] += issueObjects[j].getPercent(); 
+					prototypePredictions[i] += issueObjects[j].getLogPercent(); 
 				}	
 			} // end j
 			DoubleVectorUtils.divideAll(prototypes[i], number);
@@ -137,8 +137,7 @@ public class KMeansPredictor extends BasePredictor {
 
 	@Override
 	public String name() {
-		// TODO Auto-generated method stub
-		return null;
+		return "k-means, k = " + k;
 	}
 
 }

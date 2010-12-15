@@ -31,7 +31,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 	public double Predict(Issue issue) {
 		try {
 			double predicted = linearRegression.classifyInstance(getWekaInstance(issue));
-			double actual = issue.getPercent();
+			double actual = issue.getLogPercent();
 			System.out.println("actual percent " + actual + " predicted: " + predicted);
 			return linearRegression.classifyInstance(getWekaInstance(issue));
 		} catch (Exception e) {
@@ -90,7 +90,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 
 	@Override
 	public String name() {
-		return "Linear Regression Predictor\n Vector Maker: " + vectorMaker.name();
+		return "Linear Regression Predictor: Vector Maker: " + vectorMaker.name();
 	}
 	
 	public Instance getWekaInstance(Issue issue) {
@@ -102,7 +102,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 			v[i] = attributeData[i];
 		}
 		
-		v[attributeData.length] = issue.getPercent();
+		v[attributeData.length] = issue.getLogPercent();
 		
 		Instance instance = new Instance(v.length);
 		
