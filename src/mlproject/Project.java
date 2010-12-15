@@ -91,6 +91,9 @@ public class Project {
 		predictors.add(new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10)); 
 		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 10));
 		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 3));
+		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 1));
+		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 5));
+		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 7));
 		predictors.add(new ExpectedSalesPredictor());
 		predictors.add(new LinearRegressionPredictor(weighted));
 		predictors.add(new LinearRegressionPredictor(quadWeighted));
