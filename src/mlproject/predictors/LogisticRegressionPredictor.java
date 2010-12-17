@@ -11,6 +11,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import mlproject.Utils;
+import mlproject.abstractMath.VectorMaker;
 import mlproject.models.IgnoreField;
 import mlproject.models.Issue;
 //import mlproject.models.TargetField;
@@ -20,8 +21,11 @@ public class LogisticRegressionPredictor extends BasePredictor {
 
 	Logistic logistic;
 	final FastVector attributes;
+	VectorMaker vectorMaker;
+	Instances globalInstances;
 	
-	public LogisticRegressionPredictor() {
+	public LogisticRegressionPredictor(VectorMaker maker) {
+		vectorMaker = maker;
 		Field[] fs = Issue.class.getFields();
 		attributes = new FastVector(fs.length);
 		for(int i = 0; i < fs.length; i++) attributes.addElement(new Attribute(Integer.toString(i)));		
@@ -30,7 +34,10 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	@Override
 	public double Predict(Issue issue) {
 		try {
-			return logistic.classifyInstance(getWekaInstance(issue));
+			double actual = issue.getLogPercent();
+			double predicted = logistic.classifyInstance(getWekaInstance(issue)); 
+			System.out.println("actual percent " + actual + " predicted: " + predicted);
+			return predicted; 
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -43,7 +50,7 @@ public class LogisticRegressionPredictor extends BasePredictor {
 			System.out.println(fs[i].getName());
 		}
 		
-		LogisticRegressionPredictor p = new LogisticRegressionPredictor();
+		LogisticRegressionPredictor p = new LogisticRegressionPredictor(null);
 		System.out.println("size: " + p.attributes.size());
 		Instances instances = new Instances("Issue", p.attributes, 300);
 
@@ -56,34 +63,29 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	
 	@Override
 	public void Train(Collection<Issue> issues) {
-		Field[] fs = Issue.class.getFields();
-		
-		FastVector fv = new FastVector(fs.length);
-		int classIndex = 0;
-		for(int i = 0; i < fs.length; i++) {
-			Attribute attribute; 
-			if (fs[i].isAnnotationPresent(TargetField.class)) {
-				FastVector values = new FastVector(2);
-				values.addElement(-1);
-				values.addElement(1);
-				attribute = new Attribute(fs[i].getName(), values);
-				classIndex = i;
-			} else {
-				attribute = new Attribute(fs[i].getName());
-			}
+		FastVector fv = new FastVector(vectorMaker.vectorSize() + 1);
+
+		for(int i = 0; i < vectorMaker.vectorSize(); i++) {
+			Attribute attribute = new Attribute(String.valueOf(i));
 			fv.addElement(attribute);
 		}
+		FastVector possibleValues = new FastVector(2);
+		possibleValues.addElement("1");
+		possibleValues.addElement("-1");
+		fv.addElement(new Attribute("direction", possibleValues));
 		
-		Instances instances = new Instances("Issue", fv, 300);
-		instances.setClassIndex(classIndex);
+		Instances instances = new Instances("Issue", fv, issues.size());
 		
+		instances.setClassIndex(vectorMaker.vectorSize());
+		globalInstances = instances;
 		for(Issue issue: issues) {
 			Instance instance = getWekaInstance(issue);
 			instances.add(instance);
-			instance.setDataset(instances);
+			//instance.setDataset(instances);
 		}
 		
 		logistic = new Logistic();
+		
 		try {
 			logistic.buildClassifier(instances);
 		} catch (Exception e) {
@@ -98,25 +100,23 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	}
 	
 	public Instance getWekaInstance(Issue issue) {
-		Field[] fs = Issue.class.getFields();
-		Instance instance = new Instance(fs.length);
-		for(int i = 0; i < fs.length; i++) {
-			if (fs[i].isAnnotationPresent(IgnoreField.class)) continue;
-			try {
-				Field field = fs[i];
-				if (fs[i].isAnnotationPresent(TargetField.class)) {
-					instance.setValue(i , Utils.toDouble(field.get(issue)) > issue.expectedSales? 1: -1);
-				} else {
-					instance.setValue(i , Utils.toDouble(field.get(issue)));
-				}
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
-			}
+Double[] attributeData = vectorMaker.toVector(issue);
+		
+		Double[] v = new Double[attributeData.length];
+		
+		for(int i = 0; i < attributeData.length; i++) {
+		//	System.out.println("" + i + ": " + attributeData[i]);
+			v[i] = attributeData[i];
 		}
+		
+		String topValue = issue.getLogPercent() >= 0 ? "1" : "-1";
+		
+		Instance instance = new Instance(v.length + 1);
+		instance.setDataset(globalInstances);
+		for(int i = 0; i < v.length; i++) {
+			instance.setValue(i , v[i]);				
+		}
+		instance.setValue(attributeData.length, topValue);
 		
 		return instance;
 	}

@@ -19,6 +19,7 @@ import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.KMeansPredictor;
 import mlproject.predictors.KNearestNeighbour;
 import mlproject.predictors.LinearRegressionPredictor;
+import mlproject.predictors.LogisticRegressionPredictor;
 import mlproject.testing.BatchPredictionResults;
 import mlproject.testing.DataLoader;
 import mlproject.testing.DataSetType;
@@ -86,6 +87,7 @@ public class Project {
 				//predictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k));
 
 			}
+			predictors.add(new LogisticRegressionPredictor(vectorMaker));
 			for(double ridge : ridges){
 				predictors.add(new LinearRegressionPredictor(ridge, vectorMaker));
 			}
