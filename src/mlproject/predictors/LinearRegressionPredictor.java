@@ -46,7 +46,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 			System.out.println(fs[i].getName());
 		}
 		
-		LinearRegressionPredictor p = new LinearRegressionPredictor(new WeightedVectorMaker());
+		LinearRegressionPredictor p = new LinearRegressionPredictor(new WeightedVectorMaker(false));
 		System.out.println("size: " + p.attributes.size());
 		Instances instances = new Instances("Issue", p.attributes, 300);
 

@@ -5,6 +5,6 @@ public class BatchPredictionResults {
 	public int numCorrectDirection, totalChecked;
 	
 	public double directionalSuccessRate() {
-		return numCorrectDirection / totalChecked;
+		return ((double) numCorrectDirection) / totalChecked;
 	}
 }

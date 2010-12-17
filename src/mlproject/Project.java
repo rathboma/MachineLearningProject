@@ -13,7 +13,6 @@ import java.util.Map;
 
 import mlproject.abstractMath.VectorMaker;
 import mlproject.abstractMath.impl.EuclideanMetric;
-import mlproject.abstractMath.impl.NaiveVectorMaker;
 import mlproject.abstractMath.impl.PolynomialVectorMaker;
 import mlproject.abstractMath.impl.WeightedVectorMaker;
 import mlproject.dataimport.Importer;
@@ -80,23 +79,30 @@ public class Project {
 //		System.out.println("# of test issues: " + loader.getTestData().size());
 //		System.out.println("# of training issues: " + loader.getTrainingData().size());
 //		
+		List<VectorMaker<Issue>> vectorMakers = new ArrayList<VectorMaker<Issue>>();
+		vectorMakers.add(new WeightedVectorMaker(false));
+		//vectorMakers.add(new PolynomialVectorMaker<Issue>(0, new WeightedVectorMaker(false)));
+		vectorMakers.add(new PolynomialVectorMaker<Issue>(1, new WeightedVectorMaker(false)));
+		//vectorMakers.add(new PolynomialVectorMaker<Issue>(2, new WeightedVectorMaker(false)));
+		//vectorMakers.add(new PolynomialVectorMaker<Issue>(3, new WeightedVectorMaker(false)));
+		vectorMakers.add(new WeightedVectorMaker(true));
+		//vectorMakers.add(new PolynomialVectorMaker<Issue>(0, new WeightedVectorMaker(true)));
+		vectorMakers.add(new PolynomialVectorMaker<Issue>(1, new WeightedVectorMaker(true)));
+		vectorMakers.add(new PolynomialVectorMaker<Issue>(2, new WeightedVectorMaker(true)));
+		//vectorMakers.add(new PolynomialVectorMaker<Issue>(3, new WeightedVectorMaker(true)));
+
 		List<ISalesPredictor> predictors = new ArrayList<ISalesPredictor>();
 		
-		VectorMaker<Issue> weighted = new WeightedVectorMaker();
-		VectorMaker<Issue> quadWeighted = new PolynomialVectorMaker<Issue>(2, weighted);
+		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
+			for(int k = 2; k < 20; k+=2) {
+				predictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
+				//predictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k));
+			}
+			
+			predictors.add(new LinearRegressionPredictor(vectorMaker));
+		}
 		
-		predictors.add(new KMeansPredictor(3, weighted));
-		predictors.add(new KMeansPredictor(5, weighted));
-		predictors.add(new KMeansPredictor(10, weighted));
-		predictors.add(new KNearestNeighbour(new EuclideanMetric(new NaiveVectorMaker()), 10)); 
-		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 10));
-		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 3));
-		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 1));
-		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 5));
-		predictors.add(new KNearestNeighbour(new EuclideanMetric(weighted), 7));
 		predictors.add(new ExpectedSalesPredictor());
-		predictors.add(new LinearRegressionPredictor(weighted));
-		predictors.add(new LinearRegressionPredictor(quadWeighted));
 		
 		PredictorTester tester = new PredictorTester();
 		
@@ -135,7 +141,7 @@ public class Project {
 			@Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
 				double l1 = results.get(p1).get(DataSetType.TEST).directionalSuccessRate();
 				double l2 = results.get(p2).get(DataSetType.TEST).directionalSuccessRate();
-				return Utils.sign(l1 - l2);
+				return Utils.sign(l2 - l1);
 			}
 		});
 		

@@ -8,7 +8,7 @@ public class ExpectedSalesPredictor extends BasePredictor {
 
 	@Override
 	public double Predict(Issue issue) {
-		return 1;
+		return 0;
 	}
 
 	@Override

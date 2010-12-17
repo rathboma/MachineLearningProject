@@ -3,14 +3,11 @@ package mlproject.testing;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import mlproject.ISalesPredictor;
 import mlproject.models.Issue;
 
 public class PredictorTester{
-	
-	private Random generator = new Random();
 	
 	/**
 	 * @param predictor
@@ -20,6 +17,8 @@ public class PredictorTester{
 	 * @return the average loss for this test run.
 	 */
 	public Map<DataSetType, BatchPredictionResults> testPredictor(ISalesPredictor predictor, DataLoader loader) {
+		
+		System.out.println("Testing Predictor " + predictor.name());
 		
 		Collection<Issue> trainingSample = loader.getTrainingData();
 		Collection<Issue> testSample = loader.getTestData();

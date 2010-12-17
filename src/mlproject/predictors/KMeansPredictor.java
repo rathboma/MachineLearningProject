@@ -16,9 +16,12 @@ public class KMeansPredictor extends BasePredictor {
 	Double[] prototypePredictions;
 	VectorMaker<Issue> vectorMaker;
 	
-	public KMeansPredictor(int k, VectorMaker<Issue> maker){
+	final String id;
+	
+	public KMeansPredictor(int k, VectorMaker<Issue> maker, String id){
 		this.k = k;
 		this.vectorMaker = maker;
+		this.id = id;
 	}
 	
 	private boolean converged(Double[][] r, Double[][] r2){
@@ -137,7 +140,7 @@ public class KMeansPredictor extends BasePredictor {
 
 	@Override
 	public String name() {
-		return "k-means, k = " + k;
+		return "k-means, k = " + k + ", " +id;
 	}
 
 }
