@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 
 import mlproject.abstractMath.VectorMaker;
-import mlproject.abstractMath.impl.WeightedVectorMaker;
+import mlproject.abstractMath.vectorMaker.WeightedVectorMaker;
 import mlproject.models.Issue;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Attribute;
@@ -46,7 +46,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 			System.out.println(fs[i].getName());
 		}
 		
-		LinearRegressionPredictor p = new LinearRegressionPredictor(new WeightedVectorMaker(false));
+		LinearRegressionPredictor p = new LinearRegressionPredictor(new WeightedVectorMaker());
 		System.out.println("size: " + p.attributes.size());
 		Instances instances = new Instances("Issue", p.attributes, 300);
 

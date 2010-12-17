@@ -13,8 +13,6 @@ import java.util.Map;
 
 import mlproject.abstractMath.VectorMaker;
 import mlproject.abstractMath.impl.EuclideanMetric;
-import mlproject.abstractMath.impl.PolynomialVectorMaker;
-import mlproject.abstractMath.impl.WeightedVectorMaker;
 import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
@@ -60,12 +58,6 @@ public class Project {
 					}
 					
 				}
-				
-//				System.out.println(issue.Issue);
-//				System.out.println(issue.date.toGMTString());
-//				System.out.println(issue.heading);
-//				System.out.println(issue.astronomyAndCosmology? "*****************": "Not astonomy");
-//				System.out.println("");
 			}
 			System.out.println();
 		} catch (IOException e) {
@@ -79,24 +71,14 @@ public class Project {
 //		System.out.println("# of test issues: " + loader.getTestData().size());
 //		System.out.println("# of training issues: " + loader.getTrainingData().size());
 //		
-		List<VectorMaker<Issue>> vectorMakers = new ArrayList<VectorMaker<Issue>>();
-		vectorMakers.add(new WeightedVectorMaker(false));
-		//vectorMakers.add(new PolynomialVectorMaker<Issue>(0, new WeightedVectorMaker(false)));
-		vectorMakers.add(new PolynomialVectorMaker<Issue>(1, new WeightedVectorMaker(false)));
-		//vectorMakers.add(new PolynomialVectorMaker<Issue>(2, new WeightedVectorMaker(false)));
-		//vectorMakers.add(new PolynomialVectorMaker<Issue>(3, new WeightedVectorMaker(false)));
-		vectorMakers.add(new WeightedVectorMaker(true));
-		//vectorMakers.add(new PolynomialVectorMaker<Issue>(0, new WeightedVectorMaker(true)));
-		vectorMakers.add(new PolynomialVectorMaker<Issue>(1, new WeightedVectorMaker(true)));
-		vectorMakers.add(new PolynomialVectorMaker<Issue>(2, new WeightedVectorMaker(true)));
-		//vectorMakers.add(new PolynomialVectorMaker<Issue>(3, new WeightedVectorMaker(true)));
+		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getVMs();
 
 		List<ISalesPredictor> predictors = new ArrayList<ISalesPredictor>();
 		
 		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
-			for(int k = 2; k < 20; k+=2) {
+			for(int k = 2; k < 16; k+=2) {
 				predictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
-				//predictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k));
+				predictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k));
 			}
 			
 			predictors.add(new LinearRegressionPredictor(vectorMaker));
@@ -134,7 +116,9 @@ public class Project {
 		});
 	
 		System.out.println("Predictors in Order of Average Loss");
-		for(ISalesPredictor predictor: predictors) System.out.println(predictor.name());
+		for(ISalesPredictor predictor: predictors) {
+			System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).averageLoss + ")");
+		}
 		System.out.println("");
 		
 		Collections.sort(predictors, new Comparator<ISalesPredictor>() {
@@ -146,7 +130,9 @@ public class Project {
 		});
 		
 		System.out.println("Predictors in Order of Directional Success");
-		for(ISalesPredictor predictor: predictors) System.out.println(predictor.name());
+		for(ISalesPredictor predictor: predictors) {
+			System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).directionalSuccessRate() + ")");
+		}
 		System.out.println("");
 	}
 	

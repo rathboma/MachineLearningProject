@@ -3,6 +3,7 @@ package mlproject.abstractMath.impl;
 import mlproject.abstractMath.DoubleVectorUtils;
 import mlproject.abstractMath.Metric;
 import mlproject.abstractMath.VectorMaker;
+import mlproject.abstractMath.vectorMaker.NaiveVectorMaker;
 import mlproject.models.Issue;
 
 public class EuclideanMetric implements Metric<Issue> {
