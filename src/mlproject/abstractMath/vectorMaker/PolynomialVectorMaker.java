@@ -1,4 +1,4 @@
-package mlproject.abstractMath.impl;
+package mlproject.abstractMath.vectorMaker;
 
 import java.util.ArrayList;
 import java.util.List;

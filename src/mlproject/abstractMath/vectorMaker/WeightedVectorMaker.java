@@ -1,14 +1,14 @@
-package mlproject.abstractMath.impl;
+package mlproject.abstractMath.vectorMaker;
 
 import mlproject.Utils;
 import mlproject.abstractMath.VectorMaker;
 import mlproject.models.Issue;
 
-public class NaiveVectorMaker implements VectorMaker<Issue> {
+public class WeightedVectorMaker implements VectorMaker<Issue> {
 	
 	@Override
 	public Double[] toVector(Issue issue) {
-		Double[] v = new Double[18];
+		Double[] v = new Double[vectorSize()];
         
 		v[0] = (issue.expectedSales == null)? 36041: issue.expectedSales;
 		v[1] = (double) issue.date.getTime();
@@ -25,21 +25,17 @@ public class NaiveVectorMaker implements VectorMaker<Issue> {
 		v[12] = Utils.toDouble(issue.hasSpecial);
 		v[13] = Utils.toDouble(issue.isSpecialEdition);
 		v[14] = Utils.toDouble(issue.isAnniverseryEdition);
-		v[15] = issue.avgRed;
-		v[16] = issue.avgBlue;
-		v[17] = issue.avgGreen;
-		
 		return v;
 	}
 
 	@Override
 	public int vectorSize() {
-		return 18;
+		return 15;
 	}
 
 	@Override
 	public String name() {
-		return "NaiveVectorMaker";
+		return "Weighted";
 	}
 
 }

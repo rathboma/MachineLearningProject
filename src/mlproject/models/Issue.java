@@ -1,5 +1,6 @@
 package mlproject.models;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +22,17 @@ public class Issue{
 	public Boolean hasSpecial, isSpecialEdition, isAnniverseryEdition;
 	public Double avgRed = 0.0, avgGreen = 0.0, avgBlue = 0.0;
 	
+	public Double[][][] colorHistogram = new Double[4][4][4];
 	
+	public Issue() {
+	    for(int r = 0; r < 4; r++) {
+		    for(int g = 0; g < 4; g++) {
+			    for(int b = 0; b < 4; b++) {
+			    	colorHistogram[r][g][b] = 0.0;
+			    }
+		    }
+	    }
+	}
 	
 	public double getLogPercent() {
 		return Math.log(getPercent());
@@ -40,19 +51,35 @@ public class Issue{
 	    int maxX = image.getWidth();
 	    int maxY = image.getHeight();
 	    int numPixels = maxX * maxY;
+	    
 	    int redSum = 0, greenSum = 0, blueSum = 0;
+	    
 	    for(int x = 0; x < maxX; x++){
 	    	for(int y = 0; y < maxY; y++){
-	    		int clr = image.getRGB(x, y);
-	    		redSum += ((clr & 0x00ff0000) >> 16);
-	    		greenSum += ((clr & 0x0000ff00) >> 8);
-	    		blueSum += (clr & 0x000000ff);
+	    	    Color color = new Color(image.getRGB(x, y));
+	    		int red = color.getRed();
+	    		int green = color.getGreen();
+	    		int blue = color.getBlue();
+	    		
+	    		colorHistogram[red / 64][green / 64][blue / 64] += 1;
+	    		
+	    		redSum += red;
+	    		greenSum += green;
+	    		blueSum += blue;
 	    	}
 	    }
+	    
 	    avgRed = redSum / (double)numPixels;
 	    avgGreen = greenSum / (double)numPixels;
 	    avgBlue = blueSum / (double)numPixels;
 	    
+	    for(int r = 0; r < 4; r++) {
+		    for(int g = 0; g < 4; g++) {
+			    for(int b = 0; b < 4; b++) {
+			    	colorHistogram[r][g][b] /= (double)numPixels;
+			    }
+		    }
+	    }
 	    
 		
 		//TODO: Matthew to do more.
