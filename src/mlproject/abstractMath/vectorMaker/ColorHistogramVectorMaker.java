@@ -15,12 +15,12 @@ public class ColorHistogramVectorMaker implements VectorMaker<Issue> {
 		Double[] v = new Double[vectorSize()];
 		
 	    int atPlace = 0;
-		
-		for(int r = 0; r < 4; r++) {
-		    for(int g = 0; g < 4; g++) {
-			    for(int b = 0; b < 4; b++) {
+		int cLimit = Issue.colorLimit;
+		for(int r = 0; r < cLimit; r++) {
+		    for(int g = 0; g < cLimit; g++) {
+			    for(int b = 0; b < cLimit; b++) {
 			    	v[atPlace] = t.colorHistogram[r][g][b];
-			    	atPlace++;;
+			    	atPlace++;
 			    }
 		    }
 	    }
@@ -30,7 +30,7 @@ public class ColorHistogramVectorMaker implements VectorMaker<Issue> {
 
 	@Override
 	public int vectorSize() {
-		return 4*4*4;
+		return Issue.colorLimit*Issue.colorLimit*Issue.colorLimit;
 	}
 
 }

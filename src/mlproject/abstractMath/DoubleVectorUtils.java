@@ -46,5 +46,33 @@ public class DoubleVectorUtils {
 		}
 	}
 	
+	/**
+	 * @param population an array, the population
+	 * @return the variance
+	 */
+	public double variance(Double[] population) {
+		long n = 0;
+		double mean = 0;
+		double s = 0.0;
+
+		for (double x : population) {
+			n++;
+			double delta = x - mean;
+			mean += delta / n;
+			s += delta * (x - mean);
+		}
+		// if you want to calculate std deviation
+		// of a sample change this to (s/(n-1))
+		return (s / n);
+	}
+
+	/**
+	 * @param population an array, the population
+	 * @return the standard deviation
+	 */
+	public double standard_deviation(Double[] population) {
+		return Math.sqrt(variance(population));
+	}
+	
 	
 }

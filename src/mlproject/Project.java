@@ -77,7 +77,7 @@ public class Project {
 
 		List<ISalesPredictor> predictors = new ArrayList<ISalesPredictor>();
 		
-		double[] ridges = {0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.00000000001, 10.0};
+		double[] ridges = {0.01};
 		
 		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
 

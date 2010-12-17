@@ -68,7 +68,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 			Attribute attribute = new Attribute(String.valueOf(i));
 			fv.addElement(attribute);
 		}
-		Instances instances = new Instances("Issue", fv, fv.size());
+		Instances instances = new Instances("Issue", fv, issues.size());
 		
 		System.out.println(fv.size());
 		
@@ -104,6 +104,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 		Double[] v = new Double[attributeData.length + 1];
 		
 		for(int i = 0; i < attributeData.length; i++) {
+		//	System.out.println("" + i + ": " + attributeData[i]);
 			v[i] = attributeData[i];
 		}
 		

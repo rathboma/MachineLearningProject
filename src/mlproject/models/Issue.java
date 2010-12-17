@@ -21,13 +21,13 @@ public class Issue{
 	public Boolean otherBiology, otherTopic, abstractImage, photoImage, typographicImage;
 	public Boolean hasSpecial, isSpecialEdition, isAnniverseryEdition;
 	public Double avgRed = 0.0, avgGreen = 0.0, avgBlue = 0.0;
-	
-	public Double[][][] colorHistogram = new Double[4][4][4];
+	public static int colorLimit = 4;
+	public Double[][][] colorHistogram = new Double[colorLimit][colorLimit][colorLimit];
 	
 	public Issue() {
-	    for(int r = 0; r < 4; r++) {
-		    for(int g = 0; g < 4; g++) {
-			    for(int b = 0; b < 4; b++) {
+	    for(int r = 0; r < colorLimit; r++) {
+		    for(int g = 0; g < colorLimit; g++) {
+			    for(int b = 0; b < colorLimit; b++) {
 			    	colorHistogram[r][g][b] = 0.0;
 			    }
 		    }
@@ -60,8 +60,8 @@ public class Issue{
 	    		int red = color.getRed();
 	    		int green = color.getGreen();
 	    		int blue = color.getBlue();
-	    		
-	    		colorHistogram[red / 64][green / 64][blue / 64] += 1;
+	    		int divisor = 256 / colorLimit;
+	    		colorHistogram[red / divisor][green / divisor][blue / divisor] += 1;
 	    		
 	    		redSum += red;
 	    		greenSum += green;
@@ -73,9 +73,9 @@ public class Issue{
 	    avgGreen = greenSum / (double)numPixels;
 	    avgBlue = blueSum / (double)numPixels;
 	    
-	    for(int r = 0; r < 4; r++) {
-		    for(int g = 0; g < 4; g++) {
-			    for(int b = 0; b < 4; b++) {
+	    for(int r = 0; r < colorLimit; r++) {
+		    for(int g = 0; g < colorLimit; g++) {
+			    for(int b = 0; b < colorLimit; b++) {
 			    	colorHistogram[r][g][b] /= (double)numPixels;
 			    }
 		    }
