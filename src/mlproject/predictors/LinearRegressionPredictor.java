@@ -18,8 +18,10 @@ public class LinearRegressionPredictor extends BasePredictor {
 	LinearRegression linearRegression;
 	final VectorMaker<Issue> vectorMaker;
 	final FastVector attributes;
+	double mRidge = 0;
 	
-	public LinearRegressionPredictor(VectorMaker<Issue> vectorMaker) {
+	public LinearRegressionPredictor(double ridge, VectorMaker<Issue> vectorMaker) {
+		mRidge = ridge;
 		this.vectorMaker = vectorMaker;
 		attributes = new FastVector(vectorMaker.vectorSize() + 1);
 		for(int i = 0; i < vectorMaker.vectorSize() + 1; i++) {
@@ -46,7 +48,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 			System.out.println(fs[i].getName());
 		}
 		
-		LinearRegressionPredictor p = new LinearRegressionPredictor(new WeightedVectorMaker(false));
+		LinearRegressionPredictor p = new LinearRegressionPredictor(0, new WeightedVectorMaker(false));
 		System.out.println("size: " + p.attributes.size());
 		Instances instances = new Instances("Issue", p.attributes, 300);
 
@@ -65,12 +67,11 @@ public class LinearRegressionPredictor extends BasePredictor {
 			Attribute attribute = new Attribute(String.valueOf(i));
 			fv.addElement(attribute);
 		}
-		
-		Instances instances = new Instances("Issue", fv, 300);
+		Instances instances = new Instances("Issue", fv, fv.size());
 		
 		System.out.println(fv.size());
 		
-		//The last element is the target variable
+		//The last element is the target variable - classIndex means 'variable you want to predict'
 		instances.setClassIndex(vectorMaker.vectorSize());
 		
 		for(Issue issue: issues) {
@@ -80,7 +81,10 @@ public class LinearRegressionPredictor extends BasePredictor {
 		}
 		
 		linearRegression = new LinearRegression();
+		
+		linearRegression.setRidge(mRidge);
 		try {
+			//linearRegression.setRidge()
 			linearRegression.buildClassifier(instances);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -90,7 +94,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 
 	@Override
 	public String name() {
-		return "Linear Regression Predictor: Vector Maker: " + vectorMaker.name();
+		return "Linear Regression Predictor, ridge: " + mRidge +  ", Vector Maker: " + vectorMaker.name();
 	}
 	
 	public Instance getWekaInstance(Issue issue) {

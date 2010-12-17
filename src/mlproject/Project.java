@@ -80,26 +80,28 @@ public class Project {
 //		System.out.println("# of training issues: " + loader.getTrainingData().size());
 //		
 		List<VectorMaker<Issue>> vectorMakers = new ArrayList<VectorMaker<Issue>>();
-		vectorMakers.add(new WeightedVectorMaker(false));
+		//vectorMakers.add(new WeightedVectorMaker(false));
 		//vectorMakers.add(new PolynomialVectorMaker<Issue>(0, new WeightedVectorMaker(false)));
-		vectorMakers.add(new PolynomialVectorMaker<Issue>(1, new WeightedVectorMaker(false)));
-		//vectorMakers.add(new PolynomialVectorMaker<Issue>(2, new WeightedVectorMaker(false)));
-		//vectorMakers.add(new PolynomialVectorMaker<Issue>(3, new WeightedVectorMaker(false)));
-		vectorMakers.add(new WeightedVectorMaker(true));
-		//vectorMakers.add(new PolynomialVectorMaker<Issue>(0, new WeightedVectorMaker(true)));
-		vectorMakers.add(new PolynomialVectorMaker<Issue>(1, new WeightedVectorMaker(true)));
+//		vectorMakers.add(new PolynomialVectorMaker<Issue>(1, new WeightedVectorMaker(false)));
+//		vectorMakers.add(new WeightedVectorMaker(true));
+//		vectorMakers.add(new PolynomialVectorMaker<Issue>(1, new WeightedVectorMaker(true)));
 		vectorMakers.add(new PolynomialVectorMaker<Issue>(2, new WeightedVectorMaker(true)));
-		//vectorMakers.add(new PolynomialVectorMaker<Issue>(3, new WeightedVectorMaker(true)));
+//		//vectorMakers.add(new PolynomialVectorMaker<Issue>(3, new WeightedVectorMaker(true)));
 
 		List<ISalesPredictor> predictors = new ArrayList<ISalesPredictor>();
 		
+		double[] ridges = {0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.00000000001, 10.0};
+		
 		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
-			for(int k = 2; k < 20; k+=2) {
-				predictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
+			for(int k = 2; k < 6; k+=2) {
+				//predictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
 				//predictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k));
 			}
+			for(double ridge : ridges){
+				predictors.add(new LinearRegressionPredictor(ridge, vectorMaker));
+			}
 			
-			predictors.add(new LinearRegressionPredictor(vectorMaker));
+			
 		}
 		
 		predictors.add(new ExpectedSalesPredictor());
