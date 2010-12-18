@@ -148,5 +148,48 @@
     (==> testmeter display)  
     ()))
 
-(print (time (doit 5)))
+;;(print (time (doit 5)))
+
+;;This gets our matrix of labels
+(de get-mag-label (fileList mappingFile)
+  (let* ((label-vector (int-matrix (length fileList)))
+         (mappings  (map category-to-pair (read-lines (open-read mappingFile)))))
+    (for (i 0 (- (length fileList) 1))
+      (print (find-category (nth fileList (+ 1 i)) mappings)))))
+      ;(label-vector i (find-category (nth fileList (+ 1 i)) mappings)))))
+
+(de find-category(fileName mappings)
+  (if (= (length mappings) 0) (print "not found " fileName)
+      (if (= fileName (car (car mappings)))
+	    (nth (car mappings) 2)
+      	    (find-category fileName (cdr mappings)))))
+
+(de category-to-pair(category)
+  (map-nth 1 (split-words category) get-cat-from-str))
+
+(de get-cat-from-str(str) (if (= str "1.0") 1 -1))
+
+(de map-nth(n list f)
+  (replace-nth n list (f (nth list (+ n 1)))))
+
+(de replace-nth(n list replacement)
+  (if (= n 0) 
+      (cons replacement (cdr list))
+      (cons (car list) (replace-nth (- n 1) (cdr list) replacement))))
+
+;;This turns our files into matrices
+(de get-mag-matrix (fileList)
+  (let* ((list-of-matrices (get-mag-matrix-list fileList))
+         (height (idx-dim (car list-of-matrices) 0))
+         (width (idx-dim (car list-of-matrices) 1))
+         (newmat (ubyte-matrix (length list-of-matrices) height width)))
+    (for (i 0 (- (length list-of-matrices) 1))
+      (copy-matrix (narrow (nth list-of-matrices (+ i 1)) 1 21 0) (select newmat 0 i)))
+    newmat))
+
+(de get-mag-matrix-list (fileList)
+  (map (lambda (name) (image-read-ubim (concat imgDir name))) fileList))
+
+(de get-from-dir (imgDir)
+  (get-mag-matrix (ls imgDir)))
 
