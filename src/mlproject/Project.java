@@ -78,17 +78,18 @@ public class Project {
 
 		List<ISalesPredictor> predictors = new ArrayList<ISalesPredictor>();
 		
-		double[] ridges = {0.01};
+		double[] ridges = {0.01, 0.015, 0.03, 0.0001, 1.1, 0.1};
 		
 		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
 
 			for(int k = 2; k < 6; k+=2) {
-				//predictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
-				//predictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k));
+				predictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
+				predictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k));
 
 			}
-			predictors.add(new LogisticRegressionPredictor(vectorMaker));
+			
 			for(double ridge : ridges){
+				predictors.add(new LogisticRegressionPredictor(ridge, vectorMaker));
 				predictors.add(new LinearRegressionPredictor(ridge, vectorMaker));
 			}
 			

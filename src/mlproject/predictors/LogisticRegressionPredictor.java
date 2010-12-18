@@ -23,9 +23,10 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	final FastVector attributes;
 	VectorMaker vectorMaker;
 	Instances globalInstances;
-	
-	public LogisticRegressionPredictor(VectorMaker maker) {
+	double ridge;
+	public LogisticRegressionPredictor(double ridge, VectorMaker maker) {
 		vectorMaker = maker;
+		this.ridge = ridge;
 		Field[] fs = Issue.class.getFields();
 		attributes = new FastVector(fs.length);
 		for(int i = 0; i < fs.length; i++) attributes.addElement(new Attribute(Integer.toString(i)));		
@@ -35,7 +36,7 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	public double Predict(Issue issue) {
 		try {
 			double actual = issue.getLogPercent();
-			double predicted = logistic.classifyInstance(getWekaInstance(issue)); 
+			double predicted = logistic.classifyInstance(getWekaInstance(issue)) == 0 ? 1 : -1; 
 			System.out.println("actual percent " + actual + " predicted: " + predicted);
 			return predicted; 
 		} catch (Exception e) {
@@ -50,7 +51,7 @@ public class LogisticRegressionPredictor extends BasePredictor {
 			System.out.println(fs[i].getName());
 		}
 		
-		LogisticRegressionPredictor p = new LogisticRegressionPredictor(null);
+		LogisticRegressionPredictor p = new LogisticRegressionPredictor(1, null);
 		System.out.println("size: " + p.attributes.size());
 		Instances instances = new Instances("Issue", p.attributes, 300);
 
@@ -85,7 +86,7 @@ public class LogisticRegressionPredictor extends BasePredictor {
 		}
 		
 		logistic = new Logistic();
-		
+		logistic.setRidge(this.ridge);
 		try {
 			logistic.buildClassifier(instances);
 		} catch (Exception e) {
@@ -96,7 +97,7 @@ public class LogisticRegressionPredictor extends BasePredictor {
 
 	@Override
 	public String name() {
-		return "Logistic Regression Predictor";
+		return "Logistic Regression Predictor w/ ridge " + this.ridge;
 	}
 	
 	public Instance getWekaInstance(Issue issue) {

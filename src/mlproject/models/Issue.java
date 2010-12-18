@@ -37,6 +37,9 @@ public class Issue{
 	public double getLogPercent() {
 		return Math.log(getPercent());
 	}
+	public double getDirection(){
+		return getLogPercent() >= 0 ? 1 : -1;
+	}
 	
 	private double getPercent(){
 		if(sales != null && expectedSales != null) return sales / expectedSales;

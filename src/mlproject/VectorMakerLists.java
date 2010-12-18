@@ -33,13 +33,13 @@ public class VectorMakerLists {
 		VectorMaker<Issue> weighted = new WeightedVectorMaker();
 		VectorMaker<Issue> colorHistogram = new ColorHistogramVectorMaker();
 		
-//		baseVMs.add(averageColor);
-//		baseVMs.add(weighted);
+		baseVMs.add(averageColor);
+		baseVMs.add(weighted);
 		baseVMs.add(colorHistogram);
 //		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, weighted));
 //		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, colorHistogram));
 //		baseVMs.add(new CombinedVectorMaker<Issue>(weighted, colorHistogram));
-//		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, weighted, colorHistogram));
+		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, weighted, colorHistogram));
 		return baseVMs;
 	}
 }
