@@ -53,35 +53,83 @@
 (libload "gblearn2/net-lenet5")
 (libload "gblearn2/gb-trainers")
 (libload "gblearn2/gb-meters")
+(libload "libimage/pnm")
+(libload "libimage/image-io")
 (libload "dsource-mnist")
 
 (when (not *mnist-dir*)
       (setq *mnist-dir* (concat lushdir "/local/mnist")))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Our stuff
 
+;;This gets our matrix of labels
+(de get-mag-label (fileList mappingFile)
+  (let* ((label-vector (ubyte-matrix (length fileList)))
+         (mappings  (map category-to-pair (read-lines (open-read mappingFile)))))
+    (for (i 0 (- (length fileList) 1))
+      (label-vector i (find-category (nth fileList (+ 1 i)) mappings)))
+    label-vector))
+
+(de find-category(fileName mappings)
+  (if (= (length mappings) 0) (print "not found " fileName)
+      (if (= fileName (car (car mappings)))
+	    (nth (car mappings) 2)
+      	    (find-category fileName (cdr mappings)))))
+
+(de category-to-pair(category)
+  (map-nth 1 (split-words category) get-cat-from-str))
+
+(de get-cat-from-str(str) (if (= str "1.0") 1 -1))
+
+(de map-nth(n list f)
+  (replace-nth n list (f (nth list (+ n 1)))))
+
+(de replace-nth(n list replacement)
+  (if (= n 0) 
+      (cons replacement (cdr list))
+      (cons (car list) (replace-nth (- n 1) (cdr list) replacement))))
+
+;;This turns our files into matrices
+(de get-mag-matrix (fileList imgDir)
+  (let* ((list-of-matrices (get-mag-matrix-list fileList imgDir))
+         (height (idx-dim (car list-of-matrices) 0))
+         (width (idx-dim (car list-of-matrices) 1))
+         (newmat (ubyte-matrix (length list-of-matrices) height width)))
+    (for (i 0 (- (length list-of-matrices) 1))
+      (copy-matrix (narrow (nth list-of-matrices (+ i 1)) 1 21 0) (select newmat 0 i)))
+    newmat))
+
+(de get-mag-matrix-list (fileList imgDir)
+  (map (lambda (name) (image-read-ubim (concat imgDir name))) fileList))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; a function to load the MNIST database.
 (de build-databases-mnist (trsize tesize image-dir)
-  (setq trainingdb
+  (let ((mappingFile "/home/mes592/workspace/MachineLearningProject/mapping.txt"))
+   (setq trainingdb
+    (let* ((imgDir "/home/mes592/workspace/MachineLearningProject/small_covers_training/")
+           (imgFiles (ls imgDir)))
         (new dsource-idx3l-narrow
              (new dsource-mnist
-                  (load-matrix (concat-fname image-dir "train-images.idx3-ubyte"))
-                  (load-matrix (concat-fname image-dir "train-labels.idx1-ubyte"))
-		  32 32 0 0.01)
-             trsize 0))
-  (setq testingdb
+                  (get-mag-matrix imgFiles imgDir)
+		  (get-mag-label imgFiles mappingFile)
+		  21 28 0 0.01)
+             trsize 0)))
+   (setq testingdb
+    (let* ((imgDir "/home/mes592/workspace/MachineLearningProject/small_covers_test/")
+           (imgFiles (ls imgDir)))
         (new dsource-idx3l-narrow
              (new dsource-mnist
-                  (load-matrix (concat-fname image-dir "t10k-images.idx3-ubyte"))
-                  (load-matrix (concat-fname image-dir "t10k-labels.idx1-ubyte"))
-		  32 32 0 0.01)
-             tesize (- 5000 (* 0.5 tesize)))) ())
+                  (get-mag-matrix imgFiles imgDir)
+		  (get-mag-label imgFiles mappingFile)
+		  21 28 0 0.01)
+             tesize 0))) ()))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; number of classes
-(setq nclasses 10)
+(setq nclasses 2)
 ;; the target values for mean-squared error training
 ;; are +target for the output corresponding to the class 
 ;; being shown and -target for the other outputs.
@@ -102,7 +150,7 @@
 ;; create the network
 (setq thenet
       (new idx3-supervised-module
-	   (new-lenet5 32 32 5 5 2 2 5 5 2 2 120 10 theparam)
+	   (new-lenet5 28 21 5 6 2 2 5 5 2 2 120 nclasses theparam) 
 	   (new edist-cost labels 1 1 targets)
 	   (new max-classer labels)))
 
@@ -122,7 +170,7 @@
 ;; and testing sets. The 3rd arg is the directory where
 ;; the MNIST file reside (change this for your local setup).
 
-(build-databases-mnist 2000 1000 "/home/mes592/Desktop") ;; SMALL DEMO
+(build-databases-mnist 161 51 "/home/mes592/Desktop") ;; SMALL DEMO
 ;; (build-databases-mnist 60000 10000 *mnist-dir*) ;; FULL MNIST
 
 
@@ -148,48 +196,4 @@
     (==> testmeter display)  
     ()))
 
-;;(print (time (doit 5)))
-
-;;This gets our matrix of labels
-(de get-mag-label (fileList mappingFile)
-  (let* ((label-vector (int-matrix (length fileList)))
-         (mappings  (map category-to-pair (read-lines (open-read mappingFile)))))
-    (for (i 0 (- (length fileList) 1))
-      (print (find-category (nth fileList (+ 1 i)) mappings)))))
-      ;(label-vector i (find-category (nth fileList (+ 1 i)) mappings)))))
-
-(de find-category(fileName mappings)
-  (if (= (length mappings) 0) (print "not found " fileName)
-      (if (= fileName (car (car mappings)))
-	    (nth (car mappings) 2)
-      	    (find-category fileName (cdr mappings)))))
-
-(de category-to-pair(category)
-  (map-nth 1 (split-words category) get-cat-from-str))
-
-(de get-cat-from-str(str) (if (= str "1.0") 1 -1))
-
-(de map-nth(n list f)
-  (replace-nth n list (f (nth list (+ n 1)))))
-
-(de replace-nth(n list replacement)
-  (if (= n 0) 
-      (cons replacement (cdr list))
-      (cons (car list) (replace-nth (- n 1) (cdr list) replacement))))
-
-;;This turns our files into matrices
-(de get-mag-matrix (fileList)
-  (let* ((list-of-matrices (get-mag-matrix-list fileList))
-         (height (idx-dim (car list-of-matrices) 0))
-         (width (idx-dim (car list-of-matrices) 1))
-         (newmat (ubyte-matrix (length list-of-matrices) height width)))
-    (for (i 0 (- (length list-of-matrices) 1))
-      (copy-matrix (narrow (nth list-of-matrices (+ i 1)) 1 21 0) (select newmat 0 i)))
-    newmat))
-
-(de get-mag-matrix-list (fileList)
-  (map (lambda (name) (image-read-ubim (concat imgDir name))) fileList))
-
-(de get-from-dir (imgDir)
-  (get-mag-matrix (ls imgDir)))
-
+;(print (time (doit 5)))
