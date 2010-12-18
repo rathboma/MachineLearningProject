@@ -1,6 +1,8 @@
 package mlproject;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,13 +67,18 @@ public class Project {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		DataLoader loader = new DataLoader(issues, 30); //30% test samples.
-// JUST FOR DEBUGGING
-//		System.out.println("# of issues: " + issues.size());
-//		System.out.println("# of test issues: " + loader.getTestData().size());
-//		System.out.println("# of training issues: " + loader.getTrainingData().size());
+//		try{
+//			File f = new File("/Users/matthew/mapping.txt");
+//			BufferedWriter o = new BufferedWriter(new FileWriter(f));
+//			for(Issue issue: issues){
+//				o.write(issue.imageFile + ", " + issue.getDirection() + "\n");
+//			}
+//			o.close();
+//		}catch(Exception e){}
+//
+//		if(true) return;
 //		
+		DataLoader loader = new DataLoader(issues, 30); //30% test samples.
 
 		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getVMs();
 

@@ -1,13 +1,13 @@
 package mlproject.dataimport;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -15,6 +15,8 @@ import java.util.HashMap;
 
 import mlproject.models.Issue;
 import au.com.bytecode.opencsv.CSVParser;
+
+import com.sun.tools.internal.ws.wsdl.document.Output;
 
 public class Importer {
 
@@ -131,11 +133,19 @@ public class Importer {
 	}
 	
 	public static HashMap<File, Date> extractIssueDates(File[] files){
+		File f = new File("/Users/matthew/mappings.txt");
 		
 		HashMap<File, Date> map = new HashMap<File, Date>();
+		try{
+			BufferedWriter o = new BufferedWriter(new FileWriter(f));
+		
 		for(File file : files){
+			Date d = getDate(file.getName());
+			//o.write(file.getName() + " , " + (d.getYear() + 1900) + "-" + d.getMonth() + "-" + d.getDay() + "\n");
 			map.put(file, getDate(file.getName()));
 		}
+		o.close();
+		}catch(Exception e){}
 		return map;
 	}
 	

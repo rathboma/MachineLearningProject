@@ -23,6 +23,7 @@ public class Issue{
 	public Double avgRed = 0.0, avgGreen = 0.0, avgBlue = 0.0;
 	public static int colorLimit = 4;
 	public Double[][][] colorHistogram = new Double[colorLimit][colorLimit][colorLimit];
+	public String imageFile;
 	
 	public Issue() {
 	    for(int r = 0; r < colorLimit; r++) {
@@ -50,6 +51,7 @@ public class Issue{
 	public void extractImageFeatures(String img) throws IOException{
 		imageAttached = true;
 		File file= new File(img);
+		this.imageFile = file.getName();
 	    BufferedImage image = ImageIO.read(file);
 	    int maxX = image.getWidth();
 	    int maxY = image.getHeight();
@@ -90,8 +92,11 @@ public class Issue{
 
 
 	public boolean shouldOwn(Date d) {
-		//System.out.println("ME " + date.toGMTString() + " vs " + d.toGMTString());
-		return d.getYear() == date.getYear() && d.getMonth() == date.getMonth() && d.getDay() == date.getDay();
-		
+	
+		if(d.equals(date)){
+			//System.out.println("ME " + date.toGMTString() + " vs " + d.toGMTString());
+			return true;
+		}
+			return false;
 	}	
 }
