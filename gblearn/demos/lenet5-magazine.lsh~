@@ -155,7 +155,8 @@
   (let* ((label-vector (int-matrix (length fileList)))
          (mappings  (map category-to-pair (read-lines (open-read mappingFile)))))
     (for (i 0 (- (length fileList) 1))
-      (label-vector i (find-category (nth fileList (+ 1 i)) mappings)))))
+      (print (find-category (nth fileList (+ 1 i)) mappings)))))
+      ;(label-vector i (find-category (nth fileList (+ 1 i)) mappings)))))
 
 (de find-category(fileName mappings)
   (if (= (length mappings) 0) (print "not found " fileName)
