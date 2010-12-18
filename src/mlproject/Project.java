@@ -71,7 +71,7 @@ public class Project {
 //			File f = new File("/Users/matthew/mapping.txt");
 //			BufferedWriter o = new BufferedWriter(new FileWriter(f));
 //			for(Issue issue: issues){
-//				o.write(issue.imageFile + ", " + issue.getDirection() + "\n");
+//				o.write(issue.imageFile + " " + issue.getDirection() + "\n");
 //			}
 //			o.close();
 //		}catch(Exception e){}
