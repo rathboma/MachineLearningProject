@@ -2,9 +2,9 @@
 require 'rubygems'
 require 'fileutils'
 
-all = ARGV[0]
-training = ARGV[1]
-test = ARGV[2]
+all = './small_covers'
+training = './small_covers_training'
+test = './small_covers_test'
 
 system("rm -rf #{File.join(training, "*")}")
 system("rm -rf #{File.join(training, "*")}")
