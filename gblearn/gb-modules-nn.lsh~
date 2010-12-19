@@ -467,7 +467,7 @@
 	 (sinj (idx-dim inx 2)))
     (if (or (<> 0 (mod (- sini (- ki stridei)) stridei)) 
 	    (<> 0 (mod (- sinj (- kj stridej)) stridej)))
-	(error "inconsistent input size, kernel size, and subsampling ratio1"))
+	(error "inconsistent input size, kernel size, and subsampling ratio"))
     (let ((uuin (unfold (unfold inx 1 ki stridei) 2 kj stridej)))
       ;; resize output if necessary
       (==> sum resize thickness (idx-dim uuin 1) (idx-dim uuin 2))
