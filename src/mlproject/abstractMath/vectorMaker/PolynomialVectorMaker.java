@@ -45,7 +45,7 @@ public class PolynomialVectorMaker<T> implements VectorMaker<T> {
 
 	@Override
 	public String name() {
-		return "Polynomial Degree 2 of " + basis.name();
+		return "Polynomial Degree " + degree + " of " + basis.name();
 	}
 	
 	/**

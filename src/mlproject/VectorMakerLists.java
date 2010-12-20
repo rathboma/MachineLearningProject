@@ -15,15 +15,16 @@ public class VectorMakerLists {
 	public static List<VectorMaker<Issue>> getVMs() {
 		List<VectorMaker<Issue>> vectorMakers = new ArrayList<VectorMaker<Issue>>();
 		List<VectorMaker<Issue>> baseVMs = getBaseVMs();
-//		return getBaseVMs();
-		for(VectorMaker<Issue> baseVM: baseVMs) {
-			int maxDegree = baseVM.vectorSize() > 10? 1: 5;
-			for(int degree = 1; degree <= maxDegree; degree++) {
-				vectorMakers.add(new PolynomialVectorMaker<Issue>(degree, baseVM));
-			}
-		}
-		
-		return vectorMakers;
+		return getBaseVMs();
+//		for(VectorMaker<Issue> baseVM: baseVMs) {
+//			//int maxDegree = baseVM.vectorSize() > 10? 1 : 5;
+//			int maxDegree = 2;
+//			for(int degree = 2; degree <= maxDegree; degree++) {
+//				vectorMakers.add(new PolynomialVectorMaker<Issue>(degree, baseVM));
+//			}
+//		}
+//		System.out.println("number of vector makers : " + vectorMakers.size());
+//		return vectorMakers;
 	}
 	
 	public static List<VectorMaker<Issue>> getBaseVMs() {
@@ -33,13 +34,13 @@ public class VectorMakerLists {
 		VectorMaker<Issue> weighted = new WeightedVectorMaker();
 		VectorMaker<Issue> colorHistogram = new ColorHistogramVectorMaker();
 		
-		baseVMs.add(averageColor);
-		baseVMs.add(weighted);
-		baseVMs.add(colorHistogram);
+//		baseVMs.add(averageColor);
+//		baseVMs.add(weighted);
+//		baseVMs.add(colorHistogram);
 //		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, weighted));
-//		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, colorHistogram));
+		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, colorHistogram));
 //		baseVMs.add(new CombinedVectorMaker<Issue>(weighted, colorHistogram));
-		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, weighted, colorHistogram));
+//		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, weighted, colorHistogram));
 		return baseVMs;
 	}
 }

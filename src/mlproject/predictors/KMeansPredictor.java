@@ -29,7 +29,7 @@ public class KMeansPredictor extends BasePredictor {
 		for(int i = 0; i < r.length; i++){
 			sum += DoubleVectorUtils.dist(r[i], r2[i]);
 		}
-		System.out.println("checking convergence, difference : " + sum);
+		//System.out.println("checking convergence, difference : " + sum);
 		return sum == 0;
 	}
 	

@@ -7,6 +7,7 @@ import java.util.List;
 import mlproject.abstractMath.Metric;
 import mlproject.abstractMath.NaturalNearestNeighbor;
 import mlproject.abstractMath.NearestNeighborFunction;
+import mlproject.abstractMath.VectorMaker;
 import mlproject.models.Issue;
 
 

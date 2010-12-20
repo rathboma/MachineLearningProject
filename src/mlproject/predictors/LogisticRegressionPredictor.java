@@ -37,7 +37,7 @@ public class LogisticRegressionPredictor extends BasePredictor {
 		try {
 			double actual = issue.getLogPercent();
 			double predicted = logistic.classifyInstance(getWekaInstance(issue)) == 0 ? 1 : -1; 
-			System.out.println("actual percent " + actual + " predicted: " + predicted);
+			//System.out.println("actual percent " + actual + " predicted: " + predicted);
 			return predicted; 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -97,7 +97,7 @@ public class LogisticRegressionPredictor extends BasePredictor {
 
 	@Override
 	public String name() {
-		return "Logistic Regression Predictor w/ ridge " + this.ridge;
+		return "Logistic Regression Predictor w/ ridge " + this.ridge + " Vector maker: " + vectorMaker.name();
 	}
 	
 	public Instance getWekaInstance(Issue issue) {

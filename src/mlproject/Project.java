@@ -78,21 +78,20 @@ public class Project {
 //
 //		if(true) return;
 //		
-		DataLoader loader = new DataLoader(issues, 30); //30% test samples.
+		DataLoader loader = new DataLoader(issues, 10); //% test samples.
 
 		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getVMs();
 
 
 		List<ISalesPredictor> predictors = new ArrayList<ISalesPredictor>();
 		
-		double[] ridges = {0.01, 0.015, 0.03, 0.0001, 1.1, 0.1};
+		double[] ridges = {0.01, 0.1, 0.001, 0.005};
 		
 		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
 
-			for(int k = 2; k < 6; k+=2) {
+			for(int k = 2; k < 5; k++) {
 				predictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
 				predictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k));
-
 			}
 			
 			for(double ridge : ridges){
@@ -105,6 +104,7 @@ public class Project {
 		
 		predictors.add(new ExpectedSalesPredictor());
 		
+		System.out.println("testing " + predictors.size() + " predictor combinations");
 		PredictorTester tester = new PredictorTester();
 		
 		final Map<ISalesPredictor, Map<DataSetType, BatchPredictionResults>> results = 

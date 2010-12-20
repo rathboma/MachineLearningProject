@@ -34,7 +34,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 		try {
 			double predicted = linearRegression.classifyInstance(getWekaInstance(issue));
 			double actual = issue.getLogPercent();
-			System.out.println("actual percent " + actual + " predicted: " + predicted);
+			//System.out.println("actual percent " + actual + " predicted: " + predicted);
 			return linearRegression.classifyInstance(getWekaInstance(issue));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -70,7 +70,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 		}
 		Instances instances = new Instances("Issue", fv, issues.size());
 		
-		System.out.println(fv.size());
+		//System.out.println(fv.size());
 		
 		//The last element is the target variable - classIndex means 'variable you want to predict'
 		instances.setClassIndex(vectorMaker.vectorSize());
