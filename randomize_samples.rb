@@ -9,6 +9,9 @@ mappings = File.open('mapping.txt').readlines
 
 allowed_files = mappings.map{|f| f.split(/\s+/)[0].strip.downcase}
 
+system("mkdir #{test}") unless File.exists?(test) && File.directory?(test)
+system("mkdir #{training}") unless File.exists?(training) && File.directory?(training)
+
 system("rm -rf #{File.join(training, "*")}")
 system("rm -rf #{File.join(test, "*")}")
 system("cp #{File.join(all, '*')} #{training}")
@@ -24,7 +27,7 @@ files.each do |file|
   end
 end
 
-
+files = Dir.glob(File.join(training, '*'))
 (0..49).each do |i|
   file = files[rand(files.size)]
   
