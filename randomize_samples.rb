@@ -6,8 +6,8 @@ all = './small_covers'
 training = './small_covers_training'
 test = './small_covers_test'
 mappings = File.open('mapping.txt').readlines
-allowed_files = mappings.map{|f| f.split(/\s+/)[0].strip.downcase}
 
+allowed_files = mappings.map{|f| f.split(/\s+/)[0].strip.downcase}
 
 system("rm -rf #{File.join(training, "*")}")
 system("rm -rf #{File.join(test, "*")}")

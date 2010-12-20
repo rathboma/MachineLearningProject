@@ -2,5 +2,4 @@ bin
 *.class
 .classpath
 .project
-small_covers_training/*
-small_covers_test/*
+
