@@ -96,7 +96,7 @@
          (width (idx-dim (car list-of-matrices) 1))
          (newmat (ubyte-matrix (length list-of-matrices) height width)))
     (for (i 0 (- (length list-of-matrices) 1))
-      (copy-matrix (narrow (nth list-of-matrices (+ i 1)) 1 21 0) (select newmat 0 i)))
+      (copy-matrix (nth list-of-matrices (+ i 1)) (select newmat 0 i)))
     newmat))
 
 (de get-mag-matrix-list (fileList imgDir)
@@ -113,7 +113,7 @@
              (new dsource-mnist
                   (get-mag-matrix imgFiles imgDir)
 		  (get-mag-label imgFiles mappingFile)
-		  21 28 0 0.01)
+		  32 32 0 0.01)
              trsize 0)))
    (setq testingdb
     (let* ((imgDir "/home/mes592/workspace/MachineLearningProject/small_covers_test/")
@@ -122,7 +122,7 @@
              (new dsource-mnist
                   (get-mag-matrix imgFiles imgDir)
 		  (get-mag-label imgFiles mappingFile)
-		  21 28 0 0.01)
+		  32 32 0 0.01)
              tesize 0))) ()))
 
 
@@ -150,7 +150,7 @@
 ;; create the network
 (setq thenet
       (new idx3-supervised-module
-	   (new-lenet5 21 28 3 4 2 2 4 5 2 2 120 nclasses theparam) 
+	   (new-lenet5 32 32 5 5 2 2 5 5 2 2 120 nclasses theparam) 
 	   (new edist-cost labels 1 1 targets)
 	   (new max-classer labels)))
 
