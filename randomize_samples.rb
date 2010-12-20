@@ -14,7 +14,8 @@ files = Dir.glob(File.join(all, '*'))
 
 system("cp #{File.join(all, '*')} #{training}")
 files = Dir.glob(File.join(training, '*'))
-(0..50).each do |i|
+(0..49).each do |i|
+  puts i
   file = files[rand(files.size)]
   files.delete(file)
   system("mv #{file} #{test}")

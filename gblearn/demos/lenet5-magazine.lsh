@@ -150,7 +150,7 @@
 ;; create the network
 (setq thenet
       (new idx3-supervised-module
-	   (new-lenet5 21 28 4 5 2 2 4 5 2 2 120 nclasses theparam) 
+	   (new-lenet5 21 28 3 4 2 2 4 5 2 2 120 nclasses theparam) 
 	   (new edist-cost labels 1 1 targets)
 	   (new max-classer labels)))
 
