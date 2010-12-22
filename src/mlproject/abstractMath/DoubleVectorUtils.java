@@ -1,10 +1,17 @@
 package mlproject.abstractMath;
 
+import java.util.Collection;
+
 public class DoubleVectorUtils {
-	public static double abs(Double[] v) {
+	
+	public static double minkowskiAbsoluteValue(Double[] v, double p) {
 		double total = 0;
-		for(int i = 0; i < v.length; i++) total += v[i]*v[i];
-		return Math.sqrt(total);
+		for(int i = 0; i < v.length; i++) total += Math.pow(v[i], p);
+		return Math.pow(total, 1/p);
+	}
+	
+	public static double euclideanAbsoluteValue(Double[] v) {
+		return minkowskiAbsoluteValue(v, 2);
 	}
 	
 	public static Double[] mult(Double scalar, Double[] v) {
@@ -27,8 +34,13 @@ public class DoubleVectorUtils {
 	}
 	
 	public static double dist(Double[] v1, Double[] v2) {
-		return abs(add(v1, mult(-1.0, v2)));
+		return euclideanAbsoluteValue(add(v1, mult(-1.0, v2)));
 	}
+	
+	public static double minkowskiDistance(Double[] v1, Double[] v2, Double p) {
+		return minkowskiAbsoluteValue(add(v1, mult(-1.0, v2)), p);
+	}
+	
 	public static double sum(Double[] vector){
 		double result = 0;
 		for(Double v : vector) result += v;
@@ -74,5 +86,49 @@ public class DoubleVectorUtils {
 		return Math.sqrt(variance(population));
 	}
 	
+	public static Double[] addVectors(Double[] v1, Double[] v2) {
+		Double[] sum = new Double[v1.length];
+		for(int i = 0; i < v1.length; i++) sum[i] = v1[i] + v2[i];
+		return sum;
+	}
 	
+	public static Double[] addVectors(Collection<Double[]> vectors) {
+		Double[] sum = null;
+		for(Double[] vector: vectors) {
+			if (sum == null) sum = vector;
+			else sum = addVectors(sum, vector);
+		}
+		return sum;
+	}
+	
+	public static Double[] findMean(Collection<Double[]> vectors) {
+		Double[] mean = addVectors(vectors);
+		divideAll(mean, vectors.size());
+		return mean;
+	}
+	
+	public static Double[][] findCovarience(Collection<Double[]> vectors) {
+		int d = getDim(vectors);
+		
+		Double[] mean = findMean(vectors);
+		
+		Double[][] covar = new Double[d][d];
+		
+		for(int i = 0; i < d; i++) {
+			for(int j = 0; j < d; j++) {
+				Double sum = 0d;
+				for(Double[] vector: vectors) {
+					sum += (vector[i] - mean[i])*(vector[j] - mean[j]);
+				}
+				covar[i][j] = sum / (vectors.size() - 1);
+			}
+		}
+		
+		return covar;
+	}
+	
+	private static int getDim(Collection<Double[]> vectors) {
+		for(Double[] vector: vectors) return vector.length;
+		return 0;
+	}
 }

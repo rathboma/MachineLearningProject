@@ -21,6 +21,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 	double mRidge = 0;
 	
 	public LinearRegressionPredictor(double ridge, VectorMaker<Issue> vectorMaker) {
+		System.out.println();
 		mRidge = ridge;
 		this.vectorMaker = vectorMaker;
 		attributes = new FastVector(vectorMaker.vectorSize() + 1);

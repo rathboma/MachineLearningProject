@@ -92,7 +92,10 @@ public class Issue{
 
 
 	public boolean shouldOwn(Date d) {
-	
+		
+		if (d == null) System.err.println("Input date is null");
+		if (d == null) System.err.println("Issue date is null");
+		
 		if(d.equals(date)){
 			//System.out.println("ME " + date.toGMTString() + " vs " + d.toGMTString());
 			return true;

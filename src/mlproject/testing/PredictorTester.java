@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mlproject.ISalesPredictor;
+import mlproject.Utils;
 import mlproject.models.Issue;
 
 public class PredictorTester{
@@ -21,8 +22,7 @@ public class PredictorTester{
 		
 		System.out.println("Testing Predictor " + predictor.name());
 		
-		Collection<Issue> all = loader.getAll();
-		
+		Collection<Issue> all = loader.getAll();		
 		
 		//for each issue in all, train the predictor on everything else, then test against that one, then add to loss
 		
@@ -34,8 +34,39 @@ public class PredictorTester{
 		return results;
 	}
 	
-	private BatchPredictionResults tryOnSample(ISalesPredictor predictor, Collection<Issue> everything) {
+	/**
+	 * @param predictor
+	 * @param loader
+	 * @param numTests
+	 * @return Same as above, but limit the number of tests
+	 */
+	public Map<DataSetType, BatchPredictionResults> testPredictorShort(ISalesPredictor predictor, DataLoader loader, int numTests) {
 		
+		System.out.println("Testing Predictor " + predictor.name());
+		
+		Collection<Issue> all = loader.getAll();		
+		
+		//for each issue in all, train the predictor on everything else, then test against that one, then add to loss
+		
+		Map<DataSetType, BatchPredictionResults> results =
+			new HashMap<DataSetType, BatchPredictionResults>();
+		
+		results.put(DataSetType.TEST, tryOnSampleShort(predictor, all, Utils.randomSubset(all, 50)));
+		
+		return results;
+	}
+	
+	private BatchPredictionResults tryOnSample(ISalesPredictor predictor, Collection<Issue> everything) {
+		return tryOnSampleShort(predictor, everything, everything);
+	}
+
+	/**
+	 * @param predictor
+	 * @param loader
+	 * @return This tester also does a leave-one-out analysis, but it doesn't do it for every single issue.  Instead, it
+	 *  uses n different issues.  This is for techniques that take longer to train.
+	 */
+	private BatchPredictionResults tryOnSampleShort(ISalesPredictor predictor, Collection<Issue> everything, Collection<Issue> testHoldouts) {
 		double totalLoss = 0;
 		int correctDirection = 0;
 		
@@ -49,7 +80,7 @@ public class PredictorTester{
 		//	test on that one issue
 		//  add to total loss & correct direction
 		
-		for(Issue testSample : everything){
+		for(Issue testSample : testHoldouts){
 			System.out.print('.');
 			everythingClone.remove(testSample);
 			predictor.Train(everythingClone);
@@ -64,9 +95,11 @@ public class PredictorTester{
 		System.out.println();
 		
 		BatchPredictionResults testResults = new BatchPredictionResults();
-		testResults.averageLoss = totalLoss/everything.size();
+		testResults.averageLoss = totalLoss/testHoldouts.size();
 		testResults.numCorrectDirection = correctDirection;
-		testResults.totalChecked = everything.size();
+		testResults.totalChecked = testHoldouts.size();
 		return testResults;
 	}
+
+
 }

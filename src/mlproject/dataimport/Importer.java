@@ -16,8 +16,6 @@ import java.util.HashMap;
 import mlproject.models.Issue;
 import au.com.bytecode.opencsv.CSVParser;
 
-import com.sun.tools.internal.ws.wsdl.document.Output;
-
 public class Importer {
 
 	public static Collection<Issue> getIssues(String dataFile) throws IOException {
@@ -133,7 +131,9 @@ public class Importer {
 	}
 	
 	public static HashMap<File, Date> extractIssueDates(File[] files){
-		File f = new File("/Users/matthew/mappings.txt");
+		
+		File testEnv = new File("/Users/matthew/");
+		File f = testEnv.exists()? new File("/Users/matthew/mappings.txt"): new File("/home/mes592/mappings.txt");
 		
 		HashMap<File, Date> map = new HashMap<File, Date>();
 		try{

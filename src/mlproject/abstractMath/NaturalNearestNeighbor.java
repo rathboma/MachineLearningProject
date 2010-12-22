@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import mlproject.abstractMath.impl.CachedMetric;
+
 //import mlproject.abstractMath.impl.CachedMetric;
 
 /**
@@ -15,7 +17,7 @@ import java.util.TreeSet;
  */
 public class NaturalNearestNeighbor<T> implements NearestNeighborFunction<T> {
 	
-	final Metric<T> metric;
+	final public Metric<T> metric;
 	
 	public NaturalNearestNeighbor(Metric<T> metric) {
 		//this.metric = new CachedMetric<T>(metric);

@@ -1,8 +1,6 @@
 package mlproject;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,13 +13,15 @@ import java.util.Map;
 
 import mlproject.abstractMath.VectorMaker;
 import mlproject.abstractMath.impl.EuclideanMetric;
+import mlproject.abstractMath.impl.MinkowskiMetric;
+import mlproject.abstractMath.vectorMaker.PolynomialVectorMaker;
+import mlproject.abstractMath.vectorMaker.WeightedVectorMaker;
 import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.KMeansPredictor;
 import mlproject.predictors.KNearestNeighbour;
 import mlproject.predictors.LinearRegressionPredictor;
-import mlproject.predictors.LogisticRegressionPredictor;
 import mlproject.testing.BatchPredictionResults;
 import mlproject.testing.DataLoader;
 import mlproject.testing.DataSetType;
@@ -29,7 +29,7 @@ import mlproject.testing.PredictorTester;
 
 public class Project {
 	
-	public static void main(String[] args){		
+	public static void main(String[] args){
 		Collection<Issue> issues = null;
 		try {
 			System.out.println("Loading issues from csv....");
@@ -59,7 +59,6 @@ public class Project {
 						}
 						break;
 					}
-					
 				}
 			}
 			System.out.println();
@@ -67,6 +66,7 @@ public class Project {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 //		try{
 //			File f = new File("/Users/matthew/mapping.txt");
 //			BufferedWriter o = new BufferedWriter(new FileWriter(f));
@@ -78,44 +78,37 @@ public class Project {
 //
 //		if(true) return;
 //		
+		
 		DataLoader loader = new DataLoader(issues, 10); //% test samples.
 
-		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getVMs();
 
-
-		List<ISalesPredictor> predictors = new ArrayList<ISalesPredictor>();
+		List<ISalesPredictor> fastPredictors = getFastPredictors();
+		System.out.println("fetched " + fastPredictors.size() + " fast predictor combinations");
 		
-		double[] ridges = {0.01, 0.1, 0.001, 0.005};
+		List<ISalesPredictor> slowPredictors = getSlowPredictors();
+		System.out.println("fetched " + slowPredictors.size() + " slow predictor combinations");
 		
-		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
-
-			for(int k = 2; k < 5; k++) {
-				predictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
-				predictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k));
-			}
-			
-			for(double ridge : ridges){
-				predictors.add(new LogisticRegressionPredictor(ridge, vectorMaker));
-				predictors.add(new LinearRegressionPredictor(ridge, vectorMaker));
-			}
-			
-			
-		}
-		
-		predictors.add(new ExpectedSalesPredictor());
-		
-		System.out.println("testing " + predictors.size() + " predictor combinations");
 		PredictorTester tester = new PredictorTester();
 		
 		final Map<ISalesPredictor, Map<DataSetType, BatchPredictionResults>> results = 
 			new HashMap<ISalesPredictor, Map<DataSetType, BatchPredictionResults>>();
 		
-		for(ISalesPredictor predictor: predictors) {
+		System.out.println("Testing Fast Predictors");
+		for(ISalesPredictor predictor: fastPredictors) {
 			results.put(predictor, tester.testPredictor(predictor, loader));
 		}
 
+		System.out.println("Testing Slow Predictors");
+		for(ISalesPredictor predictor: slowPredictors) {
+			results.put(predictor, tester.testPredictorShort(predictor, loader, 50));
+		}
+		
+		List<ISalesPredictor> allPredictors = new ArrayList<ISalesPredictor>();
+		allPredictors.addAll(fastPredictors);
+		allPredictors.addAll(slowPredictors);		
+
 		//Print out the results.
-		for(ISalesPredictor predictor: predictors) {
+		for(ISalesPredictor predictor: allPredictors) {
 			Map<DataSetType, BatchPredictionResults> thisResult = results.get(predictor);
 			System.out.println(predictor.name());
 			for(DataSetType dst: thisResult.keySet()) {
@@ -126,7 +119,7 @@ public class Project {
 			System.out.println("");
 		}
 
-		Collections.sort(predictors, new Comparator<ISalesPredictor>() {
+		Collections.sort(allPredictors, new Comparator<ISalesPredictor>() {
 			@Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
 				double l1 = results.get(p1).get(DataSetType.TEST).averageLoss;
 				double l2 = results.get(p2).get(DataSetType.TEST).averageLoss;
@@ -135,12 +128,12 @@ public class Project {
 		});
 	
 		System.out.println("Predictors in Order of Average Loss");
-		for(ISalesPredictor predictor: predictors) {
+		for(ISalesPredictor predictor: allPredictors) {
 			System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).averageLoss + ")");
 		}
 		System.out.println("");
 		
-		Collections.sort(predictors, new Comparator<ISalesPredictor>() {
+		Collections.sort(allPredictors, new Comparator<ISalesPredictor>() {
 			@Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
 				double l1 = results.get(p1).get(DataSetType.TEST).directionalSuccessRate();
 				double l2 = results.get(p2).get(DataSetType.TEST).directionalSuccessRate();
@@ -149,10 +142,67 @@ public class Project {
 		});
 		
 		System.out.println("Predictors in Order of Directional Success");
-		for(ISalesPredictor predictor: predictors) {
+		for(ISalesPredictor predictor: allPredictors) {
 			System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).directionalSuccessRate() + ")");
 		}
 		System.out.println("");
+	}
+	
+	private static List<ISalesPredictor> getSlowPredictors() {
+		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getSlowVMs();
+		List<ISalesPredictor> slowPredictors = new ArrayList<ISalesPredictor>();
+		
+		//return slowPredictors; //Return nothing
+		
+		double[] ridges = {0.2, 0.1, .05, .02};
+		
+		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
+			for(int k = 2; k < 5; k++) {
+				slowPredictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
+				slowPredictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k,""));
+			}
+
+			for(double ridge : ridges){
+				//slowPredictors.add(new LogisticRegressionPredictor(ridge, vectorMaker));
+				slowPredictors.add(new LinearRegressionPredictor(ridge, vectorMaker));
+			}
+
+		}
+		
+		return slowPredictors;
+	}
+
+	public static List<ISalesPredictor> getFastPredictors() {
+		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getBaseVMs();
+
+		List<ISalesPredictor> fastPredictors = new ArrayList<ISalesPredictor>();
+		
+		//double[] ridges = {0.5, 0.2, 0.1, 0.01, 0.001};
+		
+		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
+
+			for(int k = 2; k < 5; k++) {
+				//fastPredictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
+				//fastPredictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k, "Euclidean"));
+				fastPredictors.add(new KNearestNeighbour(new MinkowskiMetric(vectorMaker, 1.9), k, "Minkowski 1.9"));
+				fastPredictors.add(new KNearestNeighbour(new MinkowskiMetric(vectorMaker, 2.1), k, "Minkowski 2.1"));
+			}
+			
+			//for(double ridge : ridges){
+				//fastPredictors.add(new LogisticRegressionPredictor(ridge, vectorMaker));
+				//fastPredictors.add(new LinearRegressionPredictor(ridge, vectorMaker));
+			//}
+		}
+		
+		
+		fastPredictors.add(
+				new KMeansPredictor(
+					2, new PolynomialVectorMaker<Issue>(2, new WeightedVectorMaker()),
+				    "Weighted vector maker"));
+	
+		fastPredictors.add(new ExpectedSalesPredictor());
+		return fastPredictors;
+
 	}
 	
 }

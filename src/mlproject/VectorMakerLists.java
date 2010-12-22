@@ -12,19 +12,23 @@ import mlproject.abstractMath.vectorMaker.WeightedVectorMaker;
 import mlproject.models.Issue;
 
 public class VectorMakerLists {
-	public static List<VectorMaker<Issue>> getVMs() {
+	/**
+	 * @return These are vectors of high length that take a long time to train,
+	 * polynomials of higher degree.
+	 */
+	public static List<VectorMaker<Issue>> getSlowVMs() {
 		List<VectorMaker<Issue>> vectorMakers = new ArrayList<VectorMaker<Issue>>();
-		List<VectorMaker<Issue>> baseVMs = getBaseVMs();
-		return getBaseVMs();
-//		for(VectorMaker<Issue> baseVM: baseVMs) {
-//			//int maxDegree = baseVM.vectorSize() > 10? 1 : 5;
-//			int maxDegree = 2;
-//			for(int degree = 2; degree <= maxDegree; degree++) {
-//				vectorMakers.add(new PolynomialVectorMaker<Issue>(degree, baseVM));
-//			}
-//		}
-//		System.out.println("number of vector makers : " + vectorMakers.size());
-//		return vectorMakers;
+
+		VectorMaker<Issue> averageColor = new AverageColorVectorMaker();
+		VectorMaker<Issue> weighted = new WeightedVectorMaker();
+
+		vectorMakers.add(new PolynomialVectorMaker<Issue>(2, averageColor));
+		vectorMakers.add(new PolynomialVectorMaker<Issue>(3, averageColor));
+		vectorMakers.add(new PolynomialVectorMaker<Issue>(2, weighted));
+		vectorMakers.add(new PolynomialVectorMaker<Issue>(2, new CombinedVectorMaker<Issue>(averageColor, weighted)));
+
+		System.out.println("number of vector makers : " + vectorMakers.size());
+		return vectorMakers;
 	}
 	
 	public static List<VectorMaker<Issue>> getBaseVMs() {
@@ -40,7 +44,7 @@ public class VectorMakerLists {
 //		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, weighted));
 		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, colorHistogram));
 //		baseVMs.add(new CombinedVectorMaker<Issue>(weighted, colorHistogram));
-//		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, weighted, colorHistogram));
+		baseVMs.add(new CombinedVectorMaker<Issue>(averageColor, weighted, colorHistogram));
 		return baseVMs;
 	}
 }

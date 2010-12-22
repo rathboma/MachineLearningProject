@@ -7,7 +7,6 @@ import java.util.List;
 import mlproject.abstractMath.Metric;
 import mlproject.abstractMath.NaturalNearestNeighbor;
 import mlproject.abstractMath.NearestNeighborFunction;
-import mlproject.abstractMath.VectorMaker;
 import mlproject.models.Issue;
 
 
@@ -16,17 +15,20 @@ public class KNearestNeighbour extends BasePredictor{
 
 	final public NearestNeighborFunction<Issue> nnf;
 	final public int k;
+	final public String id;
 	
 	private Collection<Issue> issues = new ArrayList<Issue>();
 	
-	public KNearestNeighbour(NearestNeighborFunction<Issue> nnf, int k) {
+	public KNearestNeighbour(NearestNeighborFunction<Issue> nnf, int k, String id) {
 		this.nnf = nnf;
 		this.k = k;
+		this.id = id;
 	}
 	
-	public KNearestNeighbour(Metric<Issue> measure, int k) {
+	public KNearestNeighbour(Metric<Issue> measure, int k, String id) {
 		this.nnf = new NaturalNearestNeighbor<Issue>(measure);
 		this.k = k;
+		this.id = id;
 	}
 	
 	@Override
@@ -48,7 +50,7 @@ public class KNearestNeighbour extends BasePredictor{
 
 	@Override
 	public String name() {
-		return "K-Nearest-Neighbor, K = " + k;
+		return "K-Nearest-Neighbor, K = " + k + ", " + id;
 	}
 	
 	
