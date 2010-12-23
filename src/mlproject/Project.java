@@ -163,7 +163,7 @@ public class Project {
 			}
 
 			for(double ridge : ridges){
-				//slowPredictors.add(new LogisticRegressionPredictor(ridge, vectorMaker));
+				slowPredictors.add(new LogisticRegressionPredictor(ridge, vectorMaker));
 				slowPredictors.add(new LinearRegressionPredictor(ridge, vectorMaker));
 			}
 
