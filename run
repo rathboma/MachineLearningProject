@@ -1,0 +1,1 @@
+java -cp src/:lib/weka.jar:lib/opencsv-2.2.jar mlproject/Project
