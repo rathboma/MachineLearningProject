@@ -14,6 +14,7 @@ import java.util.Map;
 import mlproject.abstractMath.VectorMaker;
 import mlproject.abstractMath.impl.EuclideanMetric;
 import mlproject.abstractMath.impl.MinkowskiMetric;
+import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker;
 import mlproject.abstractMath.vectorMaker.PolynomialVectorMaker;
 import mlproject.abstractMath.vectorMaker.WeightedVectorMaker;
 import mlproject.dataimport.Importer;
@@ -22,6 +23,7 @@ import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.KMeansPredictor;
 import mlproject.predictors.KNearestNeighbour;
 import mlproject.predictors.LinearRegressionPredictor;
+import mlproject.predictors.LogisticRegressionPredictor;
 import mlproject.testing.BatchPredictionResults;
 import mlproject.testing.DataLoader;
 import mlproject.testing.DataSetType;
@@ -152,8 +154,8 @@ public class Project {
 		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getSlowVMs();
 		List<ISalesPredictor> slowPredictors = new ArrayList<ISalesPredictor>();
 		
-		//return slowPredictors; //Return nothing
-		
+		return slowPredictors; //Return nothing
+		/*
 		double[] ridges = {0.2, 0.1, .05, .02};
 		
 		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
@@ -169,7 +171,7 @@ public class Project {
 
 		}
 		
-		return slowPredictors;
+		return slowPredictors;*/
 	}
 
 	public static List<ISalesPredictor> getFastPredictors() {
@@ -179,26 +181,23 @@ public class Project {
 		
 		//double[] ridges = {0.5, 0.2, 0.1, 0.01, 0.001};
 		
-		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
+		/*for(VectorMaker<Issue> vectorMaker: vectorMakers) {
 
 			for(int k = 2; k < 5; k++) {
-				//fastPredictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
-				//fastPredictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k, "Euclidean"));
+				fastPredictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name()));
+				fastPredictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k, "Euclidean"));
 				fastPredictors.add(new KNearestNeighbour(new MinkowskiMetric(vectorMaker, 1.9), k, "Minkowski 1.9"));
 				fastPredictors.add(new KNearestNeighbour(new MinkowskiMetric(vectorMaker, 2.1), k, "Minkowski 2.1"));
 			}
 			
-			//for(double ridge : ridges){
-				//fastPredictors.add(new LogisticRegressionPredictor(ridge, vectorMaker));
-				//fastPredictors.add(new LinearRegressionPredictor(ridge, vectorMaker));
-			//}
-		}
+			for(double ridge : ridges){
+				fastPredictors.add(new LogisticRegressionPredictor(ridge, vectorMaker));
+				fastPredictors.add(new LinearRegressionPredictor(ridge, vectorMaker));
+			}
+		}*/
 		
-		
-		fastPredictors.add(
-				new KMeansPredictor(
-					2, new PolynomialVectorMaker<Issue>(2, new WeightedVectorMaker()),
-				    "Weighted vector maker"));
+		fastPredictors.add(new LinearRegressionPredictor(0.2, 
+			new PolynomialVectorMaker<Issue>(3, new AverageColorVectorMaker())));
 	
 		fastPredictors.add(new ExpectedSalesPredictor());
 		return fastPredictors;
