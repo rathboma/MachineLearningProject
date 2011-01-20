@@ -1,6 +1,7 @@
 package mlproject.predictors;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 
@@ -16,7 +17,7 @@ import weka.core.Instances;
 public class LinearRegressionPredictor extends BasePredictor {
 
 	LinearRegression linearRegression;
-	final VectorMaker<Issue> vectorMaker;
+	public final VectorMaker<Issue> vectorMaker;
 	final FastVector attributes;
 	double mRidge = 0;
 	
@@ -41,6 +42,24 @@ public class LinearRegressionPredictor extends BasePredictor {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public double getCoefficient(int i) {
+		Double[] v = new Double[vectorMaker.vectorSize() + 1];
+		for(int k = 0; k < v.length; k++) v[k] = (i == k)? 1.0: 0.0;
+		try {
+			double predicted = linearRegression.classifyInstance(getWekaInstance(v));
+			return predicted;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public Double[] getCoefficients() {
+		Double[] v = new Double[vectorMaker.vectorSize()];
+		for(int i = 0; i < v.length; i++) v[i] = getCoefficient(i);
+		return v;
 	}
 
 	public static void main(String[] args) {
@@ -101,15 +120,18 @@ public class LinearRegressionPredictor extends BasePredictor {
 	
 	public Instance getWekaInstance(Issue issue) {
 		Double[] attributeData = vectorMaker.toVector(issue);
-		
 		Double[] v = new Double[attributeData.length + 1];
 		
 		for(int i = 0; i < attributeData.length; i++) {
-		//	System.out.println("" + i + ": " + attributeData[i]);
 			v[i] = attributeData[i];
 		}
 		
 		v[attributeData.length] = issue.getLogPercent();
+
+		return getWekaInstance(v);
+	}
+
+	public Instance getWekaInstance(Double[] v) {		
 		
 		Instance instance = new Instance(v.length);
 		

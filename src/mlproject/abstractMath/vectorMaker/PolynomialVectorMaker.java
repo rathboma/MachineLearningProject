@@ -1,6 +1,7 @@
 package mlproject.abstractMath.vectorMaker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import mlproject.abstractMath.VectorMaker;
@@ -35,6 +36,16 @@ public class PolynomialVectorMaker<T> implements VectorMaker<T> {
 		}
 		
 		return v;
+	}
+	
+	public void printOrder() {
+		List<int[]> partitions = getPartitions(basis.vectorSize(), degree);
+		
+		int i = 0;
+		for(int[] partition: partitions) {
+			System.out.println(i + ": " + Arrays.toString(partition));
+			i++;
+		}
 	}
 
 	@Override
@@ -76,7 +87,7 @@ public class PolynomialVectorMaker<T> implements VectorMaker<T> {
 	}
 	
 	public static void main(String[] args) {
-		List<int[]> parts = getPartitions(3, 2);
+		List<int[]> parts = getPartitions(3, 3);
 		
 		for(int[] part: parts)  {
 			for(int i = 0; i < part.length; i++) {

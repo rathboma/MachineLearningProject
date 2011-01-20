@@ -13,13 +13,14 @@ public class AverageColorVectorMaker implements VectorMaker<Issue> {
 		v[0] = issue.avgRed;
 		v[1] = issue.avgBlue;
 		v[2] = issue.avgGreen;
-		v[3] = Utils.toDouble(issue.photoImage);
+		//v[3] = Utils.toDouble(issue.photoImage);
 		return v;
 	}
 
 	@Override
 	public int vectorSize() {
-		return 4;
+		return 3;
+		//return 4;
 	}
 
 	@Override
