@@ -57,12 +57,9 @@
 (libload "libimage/image-io")
 (libload "dsource-mnist")
 
-(when (not *mnist-dir*)
-      (setq *mnist-dir* (concat lushdir "/local/mnist")))
-
-(setq training_images "/home/mar584/ml/small_covers_training/")
-(setq test_images "/home/mar584/ml/small_covers_test/")
-(setq mappings "/home/mar584/ml/mapping.txt")
+(setq training_images "./small_covers_training/")
+(setq test_images "./small_covers_test/")
+(setq mappings "./mapping.txt")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Our stuff
