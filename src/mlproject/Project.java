@@ -3,7 +3,6 @@ package mlproject;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,6 +18,7 @@ import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.LinearRegressionPredictor;
+import mlproject.predictors.SumOfGaussianPredictor;
 import mlproject.testing.BatchPredictionResults;
 import mlproject.testing.DataLoader;
 import mlproject.testing.DataSetType;
@@ -44,13 +44,11 @@ public class Project {
 		DataLoader loader = new DataLoader(issues, 10); //% test samples.
 
 		//Just testing
-		PolynomialVectorMaker<Issue> pvm = new PolynomialVectorMaker<Issue>(3, new AverageColorVectorMaker());
-		LinearRegressionPredictor lpredictor = new LinearRegressionPredictor(0.2, pvm);
-		lpredictor.Train(issues);
-		pvm.printOrder();
-		System.out.println(Arrays.toString(lpredictor.getCoefficients()));
-		
-		
+		//PolynomialVectorMaker<Issue> pvm = new PolynomialVectorMaker<Issue>(3, new AverageColorVectorMaker());
+		//LinearRegressionPredictor lpredictor = new LinearRegressionPredictor(0.2, pvm);
+		//lpredictor.Train(issues);
+		//pvm.printOrder();
+		//System.out.println(Arrays.toString(lpredictor.getCoefficients()));
 
 		//Remove this to actually run things
 		//if (true) return;
@@ -145,7 +143,7 @@ public class Project {
 					if(issue.shouldOwn(dateMappings.get(image))){
 						try{
 							issue.extractImageFeatures(image.getAbsolutePath());
-							//System.out.println("RGB avg: " + issue.avgRed + " " + issue.avgGreen + " " + issue.avgBlue);
+							System.out.println("Log Odds RGB avg: " + issue.logOddsAvgRed + " " + issue.logOddsAvgGreen + " " + issue.logOddsAvgBlue);
 						}catch(IOException e){
 							System.err.println("Unable to load data from " + image.getName() + " for issue " + issue.Issue );
 						}
@@ -189,6 +187,11 @@ public class Project {
 		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getBaseVMs();
 
 		List<ISalesPredictor> fastPredictors = new ArrayList<ISalesPredictor>();
+		
+		double[] standardDevs = {0.05, 0.1, 0.2, 0.5, 1, 2, 5};
+		for(int i = 0; i < standardDevs.length; i++) {
+			fastPredictors.add(new SumOfGaussianPredictor(new AverageColorVectorMaker(), standardDevs[i]));
+		}
 		
 		//double[] ridges = {0.5, 0.2, 0.1, 0.01, 0.001};
 		

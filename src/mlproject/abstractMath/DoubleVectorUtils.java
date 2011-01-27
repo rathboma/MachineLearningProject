@@ -199,6 +199,11 @@ public class DoubleVectorUtils {
 		
 		Double[] offMean = minusVectors(v, mean);
 		double val = Math.exp(-.5*dot(offMean, matrixMultiplication(inverseCovar, offMean)));
+		
+		if (val == 0) {
+			System.out.println("Bad Bad Bad");
+		}
+		
 		return val/scale;
 	}
 }

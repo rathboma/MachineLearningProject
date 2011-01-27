@@ -12,14 +12,12 @@ public class SumOfGaussianPredictor extends BasePredictor{
 
 	final public VectorMaker<Issue> vectorMaker;
 	final public double standardDev;
-	final public String id;
 	
 	private Collection<Issue> issues;
 	
-	public SumOfGaussianPredictor(VectorMaker<Issue> vectorMaker, double standardDev, String id) {
+	public SumOfGaussianPredictor(VectorMaker<Issue> vectorMaker, double standardDev) {
 		this.vectorMaker = vectorMaker;
 		this.standardDev = standardDev;
-		this.id = id;
 	}
 	
 	@Override
