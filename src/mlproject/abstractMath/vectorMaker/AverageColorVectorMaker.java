@@ -1,6 +1,5 @@
 package mlproject.abstractMath.vectorMaker;
 
-import mlproject.Utils;
 import mlproject.abstractMath.VectorMaker;
 import mlproject.models.Issue;
 
