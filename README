@@ -8,7 +8,10 @@ JAVA PROJECT
 		- runs the algorithms specified in Project.java
 		
 LUSH
-execute:
+
+first, generate test/training sets by running
+%: ruby randomize_samples.rb
+then execute:
 %: lush
 %: > (libload  "lenet5-magazine.lsh")
 %: > (doit 10) ;; the number of training runs.

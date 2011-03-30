@@ -127,7 +127,6 @@ public class Importer {
 	public static File[] getImages(String string) {
 		File folder = new File(string);
 		return folder.listFiles();
-		
 	}
 	
 	public static HashMap<File, Date> extractIssueDates(File[] files){

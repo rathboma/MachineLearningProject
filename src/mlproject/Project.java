@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+//import mlproject.dataimport.Importer;
+//import mlproject.models.Issue;
+//import mlproject.testing.DataLoader;
+
+
+//
 
 import mlproject.abstractMath.VectorMaker;
 import mlproject.abstractMath.impl.EuclideanMetric;
@@ -22,10 +26,8 @@ import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.KMeansPredictor;
 import mlproject.predictors.KNearestNeighbour;
 import mlproject.predictors.LinearRegressionPredictor;
-import mlproject.testing.BatchPredictionResults;
+import mlproject.predictors.LogisticRegressionPredictor;
 import mlproject.testing.DataLoader;
-import mlproject.testing.DataSetType;
-import mlproject.testing.PredictorTester;
 
 public class Project {
 	
@@ -78,78 +80,98 @@ public class Project {
 //
 //		if(true) return;
 //		
-		
-		DataLoader loader = new DataLoader(issues, 10); //% test samples.
-
+		Issue predictMe = new Issue();
+		predictMe.date = new Date(System.currentTimeMillis());
+		try {
+			predictMe.extractImageFeatures("/Users/matthew/Downloads/newissue.jpg");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		DataLoader loader = new DataLoader(issues, 0); //% test samples.
 
 		List<ISalesPredictor> fastPredictors = getFastPredictors();
 		System.out.println("fetched " + fastPredictors.size() + " fast predictor combinations");
-		
+
 		List<ISalesPredictor> slowPredictors = getSlowPredictors();
 		System.out.println("fetched " + slowPredictors.size() + " slow predictor combinations");
 		
-		PredictorTester tester = new PredictorTester();
-		
-		final Map<ISalesPredictor, Map<DataSetType, BatchPredictionResults>> results = 
-			new HashMap<ISalesPredictor, Map<DataSetType, BatchPredictionResults>>();
-		
-		System.out.println("Testing Fast Predictors");
-		for(ISalesPredictor predictor: fastPredictors) {
-			results.put(predictor, tester.testPredictor(predictor, loader));
-		}
-
-		System.out.println("Testing Slow Predictors");
-		for(ISalesPredictor predictor: slowPredictors) {
-			results.put(predictor, tester.testPredictorShort(predictor, loader, 50));
-		}
-		
+				
 		List<ISalesPredictor> allPredictors = new ArrayList<ISalesPredictor>();
-		allPredictors.addAll(fastPredictors);
-		allPredictors.addAll(slowPredictors);		
-
-		//Print out the results.
-		for(ISalesPredictor predictor: allPredictors) {
-			Map<DataSetType, BatchPredictionResults> thisResult = results.get(predictor);
-			System.out.println(predictor.name());
-			for(DataSetType dst: thisResult.keySet()) {
-				System.out.println(dst.toString() + " data: ");
-				System.out.println(" - Average Loss = " + thisResult.get(dst).averageLoss);
-				System.out.println(" - Direction Success: " + thisResult.get(dst).numCorrectDirection + " / " + thisResult.get(dst).totalChecked);
-			}
-			System.out.println("");
-		}
-
-		Collections.sort(allPredictors, new Comparator<ISalesPredictor>() {
-			@Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
-				double l1 = results.get(p1).get(DataSetType.TEST).averageLoss;
-				double l2 = results.get(p2).get(DataSetType.TEST).averageLoss;
-				return Utils.sign(l1 - l2);
-			}
-		});
-	
-		System.out.println("Predictors in Order of Average Loss");
-		for(ISalesPredictor predictor: allPredictors) {
-			System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).averageLoss + ")");
-		}
-		System.out.println("");
+        allPredictors.addAll(fastPredictors);
+        allPredictors.addAll(slowPredictors);
+        double total = 0.0;
+        double result = 0.0;
+        for(ISalesPredictor predictor: allPredictors) {
+            predictor.Train(issues);
+            
+            result = predictor.Predict(predictMe);
+            if(result > 0) result = 1.0;
+            if(result <= 0) result = -1.0;
+            System.out.println("predicted " + result);
+            total += result;
+        }
+        total = total / allPredictors.size();
+        System.out.println("average: " + total);
+        
+        
+			
+		        // 
+		      // System.out.println("Testing Fast Predictors");
+		      // for(ISalesPredictor predictor: fastPredictors) {
+		      //  results.put(predictor, tester.testPredictor(predictor, loader));
+		      // }
+		      // 
+		      // System.out.println("Testing Slow Predictors");
+		      // for(ISalesPredictor predictor: slowPredictors) {
+		      //  results.put(predictor, tester.testPredictorShort(predictor, loader, 50));
+		      // }
 		
-		Collections.sort(allPredictors, new Comparator<ISalesPredictor>() {
-			@Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
-				double l1 = results.get(p1).get(DataSetType.TEST).directionalSuccessRate();
-				double l2 = results.get(p2).get(DataSetType.TEST).directionalSuccessRate();
-				return Utils.sign(l2 - l1);
-			}
-		});
-		
-		System.out.println("Predictors in Order of Directional Success");
-		for(ISalesPredictor predictor: allPredictors) {
-			System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).directionalSuccessRate() + ")");
-		}
-		System.out.println("");
+
+		// 
+		//        //Print out the results.
+		//        for(ISalesPredictor predictor: allPredictors) {
+		//            Map<DataSetType, BatchPredictionResults> thisResult = results.get(predictor);
+		//            System.out.println(predictor.name());
+		//            for(DataSetType dst: thisResult.keySet()) {
+		//                System.out.println(dst.toString() + " data: ");
+		//                System.out.println(" - Average Loss = " + thisResult.get(dst).averageLoss);
+		//                System.out.println(" - Direction Success: " + thisResult.get(dst).numCorrectDirection + " / " + thisResult.get(dst).totalChecked);
+		//            }
+		//            System.out.println("");
+		//        }
+		// 
+		//        Collections.sort(allPredictors, new Comparator<ISalesPredictor>() {
+		//            @Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
+		//                double l1 = results.get(p1).get(DataSetType.TEST).averageLoss;
+		//                double l2 = results.get(p2).get(DataSetType.TEST).averageLoss;
+		//                return Utils.sign(l1 - l2);
+		//            }
+		//        });
+		//    
+		//        System.out.println("Predictors in Order of Average Loss");
+		//        for(ISalesPredictor predictor: allPredictors) {
+		//            System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).averageLoss + ")");
+		//        }
+		//        System.out.println("");
+		//        
+		//        Collections.sort(allPredictors, new Comparator<ISalesPredictor>() {
+		//            @Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
+		//                double l1 = results.get(p1).get(DataSetType.TEST).directionalSuccessRate();
+		//                double l2 = results.get(p2).get(DataSetType.TEST).directionalSuccessRate();
+		//                return Utils.sign(l2 - l1);
+		//            }
+		//        });
+		//        
+		//        System.out.println("Predictors in Order of Directional Success");
+		//        for(ISalesPredictor predictor: allPredictors) {
+		//            System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).directionalSuccessRate() + ")");
+		//        }
+		//        System.out.println("");
 	}
 	
 	private static List<ISalesPredictor> getSlowPredictors() {
-		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getSlowVMs();
+		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getBaseVMs();
 		List<ISalesPredictor> slowPredictors = new ArrayList<ISalesPredictor>();
 		
 		//return slowPredictors; //Return nothing
