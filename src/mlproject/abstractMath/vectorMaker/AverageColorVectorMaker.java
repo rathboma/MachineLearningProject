@@ -1,6 +1,5 @@
 package mlproject.abstractMath.vectorMaker;
 
-import mlproject.Utils;
 import mlproject.abstractMath.VectorMaker;
 import mlproject.models.Issue;
 
@@ -10,16 +9,22 @@ public class AverageColorVectorMaker implements VectorMaker<Issue> {
 	public Double[] toVector(Issue issue) {
 		Double[] v = new Double[vectorSize()];
   
-		v[0] = issue.avgRed;
-		v[1] = issue.avgBlue;
-		v[2] = issue.avgGreen;
-		v[3] = Utils.toDouble(issue.photoImage);
+		//v[0] = issue.avgRed;
+		//v[1] = issue.avgBlue;
+		//v[2] = issue.avgGreen;
+		//v[3] = Utils.toDouble(issue.photoImage);
+
+		v[0] = issue.logOddsAvgRed;
+		v[1] = issue.logOddsAvgBlue;
+		v[2] = issue.logOddsAvgGreen;
+
 		return v;
 	}
 
 	@Override
 	public int vectorSize() {
-		return 4;
+		return 3;
+		//return 4;
 	}
 
 	@Override

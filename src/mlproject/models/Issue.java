@@ -20,7 +20,11 @@ public class Issue{
 	public Boolean earthScience, astronomyAndCosmology, physics, technology, neuroSciencePsychology;
 	public Boolean otherBiology, otherTopic, abstractImage, photoImage, typographicImage;
 	public Boolean hasSpecial, isSpecialEdition, isAnniverseryEdition;
+	
 	public Double avgRed = 0.0, avgGreen = 0.0, avgBlue = 0.0;
+	
+	public Double logOddsAvgRed = 0.0, logOddsAvgGreen = 0.0, logOddsAvgBlue = 0.0;
+	
 	public static int colorLimit = 4;
 	public Double[][][] colorHistogram = new Double[colorLimit][colorLimit][colorLimit];
 	public String imageFile;
@@ -78,6 +82,11 @@ public class Issue{
 	    avgGreen = greenSum / (double)numPixels;
 	    avgBlue = blueSum / (double)numPixels;
 	    
+	    //Map onto the real line
+	    logOddsAvgRed = logOdds((avgRed + 0.5) / 256);
+	    logOddsAvgGreen = logOdds((avgGreen + 0.5) / 256);
+	    logOddsAvgBlue = logOdds((avgBlue + 0.5) / 256);
+	    
 	    for(int r = 0; r < colorLimit; r++) {
 		    for(int g = 0; g < colorLimit; g++) {
 			    for(int b = 0; b < colorLimit; b++) {
@@ -90,6 +99,10 @@ public class Issue{
 		//TODO: Matthew to do more.
 	}
 
+	public static double logOdds(double x) {
+		return Math.log(x/(1-x));
+	}
+	
 
 	public boolean shouldOwn(Date d) {
 		

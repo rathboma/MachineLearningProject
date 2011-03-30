@@ -1,6 +1,10 @@
 package mlproject.abstractMath;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
+import Jama.Matrix;
 
 public class DoubleVectorUtils {
 	
@@ -20,6 +24,19 @@ public class DoubleVectorUtils {
 			if(v[i] == null) v[i] = new Double(0);
 			retVal[i] = scalar * v[i];	
 		}
+		return retVal;
+	}
+	
+	public static double dot(Double[] v1, Double[] v2) {
+		int sum = 0;
+		for(int i = 0; i < v1.length; i++) sum += v1[i]*v2[i];
+		return sum;
+	}
+	
+	public static Double[] matrixMultiplication(Double[][] m, Double[] v) {
+		if (m[0].length != v.length) throw new RuntimeException("No can do!");
+		Double[] retVal = new Double[m.length];
+		for(int i = 0; i < m.length; i++) retVal[i] = dot(m[i], v);
 		return retVal;
 	}
 	
@@ -92,6 +109,12 @@ public class DoubleVectorUtils {
 		return sum;
 	}
 	
+	public static Double[] minusVectors(Double[] v1, Double[] v2) {
+		Double[] sum = new Double[v1.length];
+		for(int i = 0; i < v1.length; i++) sum[i] = v1[i] - v2[i];
+		return sum;
+	}
+	
 	public static Double[] addVectors(Collection<Double[]> vectors) {
 		Double[] sum = null;
 		for(Double[] vector: vectors) {
@@ -107,20 +130,27 @@ public class DoubleVectorUtils {
 		return mean;
 	}
 	
-	public static Double[][] findCovarience(Collection<Double[]> vectors) {
-		int d = getDim(vectors);
-		
+	public static List<Double[]> subtractOutMean(Collection<Double[]> vectors) {
+		ArrayList<Double[]> retVal = new ArrayList<Double[]>();
 		Double[] mean = findMean(vectors);
+		for(Double[] vector: vectors) retVal.add(minusVectors(vector, mean));
+		return retVal;
+	}
+	
+	/**
+	 * @param vectors: Assume that the mean has already been subtracted out
+	 * @return The covariance matrix
+	 */
+	public static Double[][] findCovarienceAssumingZeroMean(Collection<Double[]> vectors) {
+		int d = getDim(vectors);
 		
 		Double[][] covar = new Double[d][d];
 		
 		for(int i = 0; i < d; i++) {
 			for(int j = 0; j < d; j++) {
 				Double sum = 0d;
-				for(Double[] vector: vectors) {
-					sum += (vector[i] - mean[i])*(vector[j] - mean[j]);
-				}
-				covar[i][j] = sum / (vectors.size() - 1);
+				for(Double[] vector: vectors) sum += vector[i]*vector[j];
+				covar[i][j] = sum / vectors.size();
 			}
 		}
 		
@@ -130,5 +160,50 @@ public class DoubleVectorUtils {
 	private static int getDim(Collection<Double[]> vectors) {
 		for(Double[] vector: vectors) return vector.length;
 		return 0;
+	}
+	
+	static public Double[][] inverseMatrix(Double[][] matrix) {
+		//Need to do some dumb boxing and un boxing
+		double[][] unboxedMatrix = new double[matrix.length][matrix.length];
+		for(int i = 0; i < matrix.length; i++)
+			for(int j = 0; j < matrix.length; j++)
+				unboxedMatrix[i][j] = matrix[i][j];
+		
+		double[][] unboxedInverse = new Matrix(unboxedMatrix).inverse().getArray();
+		Double[][] inverse = new Double[matrix.length][matrix.length];
+		for(int i = 0; i < matrix.length; i++)
+			for(int j = 0; j < matrix.length; j++)
+				inverse[i][j] = unboxedInverse[i][j];
+		return inverse;
+	}
+	
+	static public double determinant(Double[][] matrix) {
+		//Need to do some dumb boxing and un boxing
+		double[][] unboxedMatrix = new double[matrix.length][matrix.length];
+		for(int i = 0; i < matrix.length; i++)
+			for(int j = 0; j < matrix.length; j++)
+				unboxedMatrix[i][j] = matrix[i][j];
+		
+		return new Matrix(unboxedMatrix).det();
+	}
+	
+	static public double computeGaussian(Double[] v, Double[] mean, Double[][] covar) {
+		int k = v.length;
+		if (mean.length != k) throw new RuntimeException("This is a problem!");
+		if (covar.length != k) throw new RuntimeException("This is a problem!");
+				
+		double corvarDet = determinant(covar);
+		Double[][] inverseCovar = inverseMatrix(covar);
+		
+		double scale = Math.pow(2*Math.PI, ((double)k)/2) * Math.sqrt(corvarDet);
+		
+		Double[] offMean = minusVectors(v, mean);
+		double val = Math.exp(-.5*dot(offMean, matrixMultiplication(inverseCovar, offMean)));
+		
+		if (val == 0) {
+			System.out.println("Bad Bad Bad");
+		}
+		
+		return val/scale;
 	}
 }
