@@ -10,7 +10,7 @@ public class NaiveVectorMaker implements VectorMaker<Issue> {
 	public Double[] toVector(Issue issue) {
 		Double[] v = new Double[18];
         
-		v[0] = (issue.expectedSales == null)? 36041: issue.expectedSales;
+		v[0] = (issue.getExpectedSales() == null)? 36041: issue.getExpectedSales();
 		v[1] = (double) issue.date.getTime();
 		v[2] = Utils.toDouble(issue.astronomyAndCosmology);
 		v[3] = Utils.toDouble(issue.earthScience);

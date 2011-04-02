@@ -38,8 +38,8 @@ public class Importer {
 			
 			try {
 				Issue newIssue = makeIssue(csvFields, csvValues, imagePath);
-				if (newIssue.expectedSales != null) {
-					issues.add(makeIssue(csvFields, csvValues, imagePath));
+				if (newIssue.getExpectedSales() != null) {
+					issues.add(newIssue);
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

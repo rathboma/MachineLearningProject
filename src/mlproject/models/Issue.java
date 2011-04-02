@@ -12,9 +12,9 @@ public class Issue{
 	public boolean imageAttached;
 	
 	public Double sales;
-	public Double expectedSales;
 	public Long Issue;
 	public Date date;
+	public Integer time;
 	public String heading;
 	public Boolean aboveExpected;
 	public Boolean earthScience, astronomyAndCosmology, physics, technology, neuroSciencePsychology;
@@ -39,15 +39,33 @@ public class Issue{
 	    }
 	}
 	
+	public static double EXP_LOG_SALES_QUAD_A = -1.242E-7;
+	public static double EXP_LOG_SALES_QUAD_B = 1.161126E-4;
+	public static double EXP_LOG_SALES_QUAD_C = 10.5357962769;
+	
+	public Double getExpectedLogSales() {
+		if (time == null) return null;
+		return EXP_LOG_SALES_QUAD_A*time*time + EXP_LOG_SALES_QUAD_B*time + EXP_LOG_SALES_QUAD_C;
+	}
+	
+	public Double getLogSales() {
+		return Math.log(sales);
+	}
+	
+	public Double getExpectedSales() {
+		return Math.exp(getExpectedLogSales());
+	}
+		
 	public double getLogPercent() {
 		return Math.log(getPercent());
 	}
+	
 	public double getDirection(){
 		return getLogPercent() >= 0 ? 1 : -1;
 	}
 	
 	private double getPercent(){
-		if(sales != null && expectedSales != null) return sales / expectedSales;
+		if(sales != null && getExpectedSales() != null) return sales / getExpectedSales();
 		return 1;
 	}
 	
@@ -116,10 +134,6 @@ public class Issue{
 		if (d == null) System.err.println("Input date is null");
 		if (d == null) System.err.println("Issue date is null");
 		
-		if(d.equals(date)){
-			//System.out.println("ME " + date.toGMTString() + " vs " + d.toGMTString());
-			return true;
-		}
-			return false;
+		return d.equals(date);
 	}	
 }
