@@ -20,7 +20,7 @@ public class ProjectFindBestColor {
 		
 		predictor.Train(issues);
     
-		int colorGap = (int) Math.pow(COLOR_HOPPER, 2);
+		int colorGap = (int) Math.pow(2, COLOR_HOPPER);
 		
 		int bestRed = 0;
 		int bestGreen = 0;
