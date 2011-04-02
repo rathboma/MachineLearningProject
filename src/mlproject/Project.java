@@ -4,26 +4,27 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-//import mlproject.dataimport.Importer;
-//import mlproject.models.Issue;
-//import mlproject.testing.DataLoader;
-
-
-//
+import java.util.Map;
 
 import mlproject.abstractMath.VectorMaker;
 import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker;
+import mlproject.abstractMath.vectorMaker.ColorHistogramVectorMaker;
 import mlproject.abstractMath.vectorMaker.PolynomialVectorMaker;
 import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
+import mlproject.predictors.KMeansPredictor;
 import mlproject.predictors.LinearRegressionPredictor;
-import mlproject.predictors.LogisticRegressionPredictor;
+import mlproject.predictors.SumOfGaussianPredictor;
+import mlproject.testing.BatchPredictionResults;
 import mlproject.testing.DataLoader;
+import mlproject.testing.DataSetType;
+import mlproject.testing.PredictorTester;
 
 public class Project {
 	
@@ -45,7 +46,12 @@ public class Project {
 		Issue predictMe = new Issue();
 		predictMe.date = new Date(System.currentTimeMillis());
 		try {
-			predictMe.extractImageFeatures("/Users/matthew/Downloads/newissue.jpg");
+			if (new File("/home/mes592/newissue.jpg").exists()) {
+				predictMe.extractImageFeatures("/home/mes592/newissue.jpg");
+			}
+			else {
+				predictMe.extractImageFeatures("/Users/matthew/Downloads/newissue.jpg");
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -82,59 +88,63 @@ public class Project {
         
 			
 		        // 
-		      // System.out.println("Testing Fast Predictors");
-		      // for(ISalesPredictor predictor: fastPredictors) {
-		      //  results.put(predictor, tester.testPredictor(predictor, loader));
-		      // }
-		      // 
-		      // System.out.println("Testing Slow Predictors");
-		      // for(ISalesPredictor predictor: slowPredictors) {
-		      //  results.put(predictor, tester.testPredictorShort(predictor, loader, 50));
-		      // }
+        
+        PredictorTester tester = new PredictorTester();
+        final Map<ISalesPredictor, Map<DataSetType, BatchPredictionResults>> results = 
+        	new HashMap<ISalesPredictor, Map<DataSetType, BatchPredictionResults>>();
+		System.out.println("Testing Fast Predictors");
+		for(ISalesPredictor predictor: fastPredictors) {
+		   results.put(predictor, tester.testPredictor(predictor, loader));
+		}
+		       
+		       System.out.println("Testing Slow Predictors");
+		       for(ISalesPredictor predictor: slowPredictors) {
+		        results.put(predictor, tester.testPredictorShort(predictor, loader, 50));
+		       }
 		
 
 		// 
 		//        //Print out the results.
-		//        for(ISalesPredictor predictor: allPredictors) {
-		//            Map<DataSetType, BatchPredictionResults> thisResult = results.get(predictor);
-		//            System.out.println(predictor.name());
-		//            for(DataSetType dst: thisResult.keySet()) {
-		//                System.out.println(dst.toString() + " data: ");
-		//                System.out.println(" - Average Loss = " + thisResult.get(dst).averageLoss);
-		//                System.out.println(" - Direction Success: " + thisResult.get(dst).numCorrectDirection + " / " + thisResult.get(dst).totalChecked);
-		//            }
-		//            System.out.println("");
-		//        }
+		        for(ISalesPredictor predictor: allPredictors) {
+		            Map<DataSetType, BatchPredictionResults> thisResult = results.get(predictor);
+		            System.out.println(predictor.name());
+		            for(DataSetType dst: thisResult.keySet()) {
+		                System.out.println(dst.toString() + " data: ");
+		                System.out.println(" - Average Loss = " + thisResult.get(dst).averageLoss);
+		                System.out.println(" - Direction Success: " + thisResult.get(dst).numCorrectDirection + " / " + thisResult.get(dst).totalChecked);
+		            }
+		            System.out.println("");
+		        }
 		// 
-		//        Collections.sort(allPredictors, new Comparator<ISalesPredictor>() {
-		//            @Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
-		//                double l1 = results.get(p1).get(DataSetType.TEST).averageLoss;
-		//                double l2 = results.get(p2).get(DataSetType.TEST).averageLoss;
-		//                return Utils.sign(l1 - l2);
-		//            }
-		//        });
-		//    
-		//        System.out.println("Predictors in Order of Average Loss");
-		//        for(ISalesPredictor predictor: allPredictors) {
-		//            System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).averageLoss + ")");
-		//        }
-		//        System.out.println("");
-		//        
-		//        Collections.sort(allPredictors, new Comparator<ISalesPredictor>() {
-		//            @Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
-		//                double l1 = results.get(p1).get(DataSetType.TEST).directionalSuccessRate();
-		//                double l2 = results.get(p2).get(DataSetType.TEST).directionalSuccessRate();
-		//                return Utils.sign(l2 - l1);
-		//            }
-		//        });
-		//        
-		//        System.out.println("Predictors in Order of Directional Success");
-		//        for(ISalesPredictor predictor: allPredictors) {
-		//            System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).directionalSuccessRate() + ")");
-		//        }
-		//        System.out.println("");
+		        Collections.sort(allPredictors, new Comparator<ISalesPredictor>() {
+		            @Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
+		                double l1 = results.get(p1).get(DataSetType.TEST).averageLoss;
+		                double l2 = results.get(p2).get(DataSetType.TEST).averageLoss;
+		                return Utils.sign(l1 - l2);
+		            }
+		        });
+		    
+		        System.out.println("Predictors in Order of Average Loss");
+		        for(ISalesPredictor predictor: allPredictors) {
+		            System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).averageLoss + ")");
+		        }
+		        System.out.println("");
+		        
+		        Collections.sort(allPredictors, new Comparator<ISalesPredictor>() {
+		            @Override public int compare(ISalesPredictor p1, ISalesPredictor p2) {
+		                double l1 = results.get(p1).get(DataSetType.TEST).directionalSuccessRate();
+		                double l2 = results.get(p2).get(DataSetType.TEST).directionalSuccessRate();
+		                return Utils.sign(l2 - l1);
+		            }
+		        });
+		        
+		        System.out.println("Predictors in Order of Directional Success");
+		        for(ISalesPredictor predictor: allPredictors) {
+		            System.out.println(predictor.name() + " (" + results.get(predictor).get(DataSetType.TEST).directionalSuccessRate() + ")");
+		        }
+		        System.out.println("");
+		        
 	}
-
 	private static Collection<Issue> loadIssues() {
 		Collection<Issue> issues = null;
 		try {
@@ -203,13 +213,24 @@ public class Project {
 		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getBaseVMs();
 
 		List<ISalesPredictor> fastPredictors = new ArrayList<ISalesPredictor>();
+
+		VectorMaker vectorMaker = new AverageColorVectorMaker();
+		VectorMaker chvm = new ColorHistogramVectorMaker();
 		
-		double[] standardDevs = {0.05, 0.1, 0.2, 0.5, 1, 2, 5};
+		//double[] standardDevs = {0.05, 0.1, 0.2, 0.5, 1, 2, 5};
+		double[] standardDevs = {0.05, 0.1, 0.2, 0.5};
 		for(int i = 0; i < standardDevs.length; i++) {
-			fastPredictors.add(new SumOfGaussianPredictor(new AverageColorVectorMaker(), standardDevs[i]));
+			fastPredictors.add(new SumOfGaussianPredictor(vectorMaker, standardDevs[i]));
+			//fastPredictors.add(new SumOfGaussianPredictor(chvm, standardDevs[i]));
 		}
 		
 		//double[] ridges = {0.5, 0.2, 0.1, 0.01, 0.001};
+		
+		fastPredictors.add(new KMeansPredictor(3, vectorMaker, "VectorMaker: " + vectorMaker.name()));
+		fastPredictors.add(new KMeansPredictor(5, vectorMaker, "VectorMaker: " + vectorMaker.name()));
+
+		fastPredictors.add(new KMeansPredictor(3, chvm, "VectorMaker: " + chvm.name()));
+		//fastPredictors.add(new KMeansPredictor(5, chvm, "VectorMaker: " + chvm.name()));
 		
 		/*for(VectorMaker<Issue> vectorMaker: vectorMakers) {
 
@@ -229,6 +250,9 @@ public class Project {
 		fastPredictors.add(new LinearRegressionPredictor(0.2, 
 			new PolynomialVectorMaker<Issue>(3, new AverageColorVectorMaker())));
 	
+		//fastPredictors.add(new LinearRegressionPredictor(0.2, 
+		//		new PolynomialVectorMaker<Issue>(3, chvm)));
+
 		fastPredictors.add(new ExpectedSalesPredictor());
 		return fastPredictors;
 
