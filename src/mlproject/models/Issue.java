@@ -4,17 +4,27 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.imageio.ImageIO;
 
 public class Issue{
+    private static final DateFormat firstIssueDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+    private static Date firstIssue;
+    
+    static {
+	 try {
+		 firstIssue = firstIssueDateFormat.parse("01/08/2005");
+	 } catch(Exception e) {e.printStackTrace();}
+    }
+	
 	@IgnoreField public String mImagePath;
 	public boolean imageAttached;
 	
 	public Double sales;
 	public Long Issue;
 	public Date date;
-	public Integer time;
 	public String heading;
 	public Boolean aboveExpected;
 	public Boolean earthScience, astronomyAndCosmology, physics, technology, neuroSciencePsychology;
@@ -44,8 +54,21 @@ public class Issue{
 	public static double EXP_LOG_SALES_QUAD_C = 10.5357962769;
 	
 	public Double getExpectedLogSales() {
+		Long time = getTime();
 		if (time == null) return null;
 		return EXP_LOG_SALES_QUAD_A*time*time + EXP_LOG_SALES_QUAD_B*time + EXP_LOG_SALES_QUAD_C;
+	}
+	
+	public Long getTime() {
+		if (date == null) return null;
+		return (((date.getTime() - firstIssue.getTime())) / (1000*60*60*24));
+		
+	}
+	
+	public Double getOldExpectedSales() {
+		Long time = getTime();
+		if (time == null) return null;
+		return 37676.1 + 3.37277*time - 0.00400981*time*time;
 	}
 	
 	public Double getLogSales() {
@@ -53,6 +76,8 @@ public class Issue{
 	}
 	
 	public Double getExpectedSales() {
+		Long time = getTime();
+		if (time == null) return null;
 		return Math.exp(getExpectedLogSales());
 	}
 		

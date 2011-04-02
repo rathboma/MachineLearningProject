@@ -20,6 +20,7 @@ import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.KMeansPredictor;
 import mlproject.predictors.LinearRegressionPredictor;
+import mlproject.predictors.OldExpectedSalesPredictor;
 import mlproject.predictors.SumOfGaussianPredictor;
 import mlproject.testing.BatchPredictionResults;
 import mlproject.testing.DataLoader;
@@ -255,6 +256,7 @@ public class Project {
 		//		new PolynomialVectorMaker<Issue>(3, chvm)));
 
 		fastPredictors.add(new ExpectedSalesPredictor());
+		fastPredictors.add(new OldExpectedSalesPredictor());
 		return fastPredictors;
 
 	}

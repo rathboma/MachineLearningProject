@@ -10,9 +10,10 @@ import mlproject.predictors.SumOfGaussianPredictor;
 
 public class ProjectFindBestColor {
 	
-	final static int COLOR_HOPPER = 2;
+	final static int COLOR_HOPPER = 4;
 	
 	public static void main(String[] args){
+		
 		Collection<Issue> issues = Project.loadIssues();
 		
 		VectorMaker<Issue> vm = new AverageColorVectorMaker();
