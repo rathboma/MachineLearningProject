@@ -78,14 +78,11 @@ public class Issue{
 	    	}
 	    }
 	    
-	    avgRed = redSum / (double)numPixels;
-	    avgGreen = greenSum / (double)numPixels;
-	    avgBlue = blueSum / (double)numPixels;
+	    double avgRedCalc = redSum / (double)numPixels;
+	    double avgGreenCalc = greenSum / (double)numPixels;
+	    double avgBlueCalc = blueSum / (double)numPixels;
 	    
-	    //Map onto the real line
-	    logOddsAvgRed = logOdds((avgRed + 0.5) / 256);
-	    logOddsAvgGreen = logOdds((avgGreen + 0.5) / 256);
-	    logOddsAvgBlue = logOdds((avgBlue + 0.5) / 256);
+	    setColors(avgRedCalc, avgGreenCalc, avgBlueCalc);
 	    
 	    for(int r = 0; r < colorLimit; r++) {
 		    for(int g = 0; g < colorLimit; g++) {
@@ -95,8 +92,18 @@ public class Issue{
 		    }
 	    }
 	    
-		
 		//TODO: Matthew to do more.
+	}
+	
+	public void setColors(double avgRed, double avgGreen, double avgBlue) {
+		this.avgRed = avgRed;
+		this.avgGreen = avgGreen;
+		this.avgBlue = avgBlue;
+		
+	    //Map onto the real line
+	    logOddsAvgRed = logOdds((avgRed + 0.5) / 256);
+	    logOddsAvgGreen = logOdds((avgGreen + 0.5) / 256);
+	    logOddsAvgBlue = logOdds((avgBlue + 0.5) / 256);
 	}
 
 	public static double logOdds(double x) {

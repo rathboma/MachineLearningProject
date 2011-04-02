@@ -145,7 +145,8 @@ public class Project {
 		        System.out.println("");
 		        
 	}
-	private static Collection<Issue> loadIssues() {
+	
+	static public Collection<Issue> loadIssues() {
 		Collection<Issue> issues = null;
 		try {
 			System.out.println("Loading issues from csv....");
@@ -169,7 +170,7 @@ public class Project {
 					if(issue.shouldOwn(dateMappings.get(image))){
 						try{
 							issue.extractImageFeatures(image.getAbsolutePath());
-							System.out.println("Log Odds RGB avg: " + issue.logOddsAvgRed + " " + issue.logOddsAvgGreen + " " + issue.logOddsAvgBlue);
+							//System.out.println("Log Odds RGB avg: " + issue.logOddsAvgRed + " " + issue.logOddsAvgGreen + " " + issue.logOddsAvgBlue);
 						}catch(IOException e){
 							System.err.println("Unable to load data from " + image.getName() + " for issue " + issue.Issue );
 						}
