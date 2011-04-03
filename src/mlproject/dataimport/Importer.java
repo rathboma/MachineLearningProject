@@ -8,6 +8,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -110,7 +113,12 @@ public class Importer {
 			return (T) str;
 		if (type == Date.class) {
 			//simple date parser doesn't work well when year is 2 numbers, which it was. Regular date parser works better.
-			return (T) (new Date(Date.parse(str)));
+			DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				return (T) dateFormat.parse(str);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		throw new RuntimeException("Unknown type: " + type);

@@ -6,12 +6,13 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import javax.imageio.ImageIO;
 
 public class Issue{
     private static final DateFormat firstIssueDateFormat = new SimpleDateFormat("MM/dd/yyyy");
-    private static Date firstIssue;
+    public static Date firstIssue;
     
     static {
 	 try {
@@ -49,9 +50,9 @@ public class Issue{
 	    }
 	}
 	
-	public static double EXP_LOG_SALES_QUAD_A = -1.242E-7;
-	public static double EXP_LOG_SALES_QUAD_B = 1.161126E-4;
-	public static double EXP_LOG_SALES_QUAD_C = 10.5357962769;
+	public static double EXP_LOG_SALES_QUAD_A = -1.091306773154e-07;
+	public static double EXP_LOG_SALES_QUAD_B = 8.675900629499e-05;
+	public static double EXP_LOG_SALES_QUAD_C = 1.053759992675e+01;
 	
 	public Double getExpectedLogSales() {
 		Long time = getTime();
@@ -63,6 +64,12 @@ public class Issue{
 		if (date == null) return null;
 		return (((date.getTime() - firstIssue.getTime())) / (1000*60*60*24));
 		
+	}
+	
+	public int getDayOfYear() {
+        Calendar ca1 = Calendar.getInstance();
+        ca1.set(date.getYear(),date.getMonth(),date.getDay());
+        return ca1.get(Calendar.DAY_OF_YEAR);
 	}
 	
 	public Double getOldExpectedSales() {

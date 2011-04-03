@@ -11,17 +11,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mlproject.abstractMath.PolynomialFitter;
 import mlproject.abstractMath.VectorMaker;
+import mlproject.abstractMath.PolynomialFitter.Polynomial;
 import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker;
 import mlproject.abstractMath.vectorMaker.ColorHistogramVectorMaker;
 import mlproject.abstractMath.vectorMaker.PolynomialVectorMaker;
 import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
-import mlproject.predictors.KMeansPredictor;
 import mlproject.predictors.LinearRegressionPredictor;
 import mlproject.predictors.OldExpectedSalesPredictor;
-import mlproject.predictors.SumOfGaussianPredictor;
+import mlproject.predictors.TimePolynomialPredictor;
+import mlproject.predictors.TimePredictorSeasonal;
 import mlproject.testing.BatchPredictionResults;
 import mlproject.testing.DataLoader;
 import mlproject.testing.DataSetType;
@@ -159,7 +161,8 @@ public class Project {
 				issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
 				images = Importer.getImages("/Users/matthew/Pictures/cover_images/");
 			} else {
-				issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
+				//issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
+				issues = Importer.getIssues("/home/mes592/New Scientist.csv");
 				images = Importer.getImages("/home/mes592/images/cover_images/");
 			}
 
@@ -169,10 +172,10 @@ public class Project {
 				System.out.print(".");
 				for(File image : images){
 					if(issue.shouldOwn(dateMappings.get(image))){
-						try{
+						try {
 							issue.extractImageFeatures(image.getAbsolutePath());
 							//System.out.println("Log Odds RGB avg: " + issue.logOddsAvgRed + " " + issue.logOddsAvgGreen + " " + issue.logOddsAvgBlue);
-						}catch(IOException e){
+						} catch(IOException e){
 							System.err.println("Unable to load data from " + image.getName() + " for issue " + issue.Issue );
 						}
 						break;
@@ -220,18 +223,18 @@ public class Project {
 		VectorMaker chvm = new ColorHistogramVectorMaker();
 		
 		//double[] standardDevs = {0.05, 0.1, 0.2, 0.5, 1, 2, 5};
-		double[] standardDevs = {0.05, 0.1, 0.2, 0.5};
+		/*double[] standardDevs = {0.05, 0.1, 0.2, 0.5};
 		for(int i = 0; i < standardDevs.length; i++) {
 			fastPredictors.add(new SumOfGaussianPredictor(vectorMaker, standardDevs[i]));
 			//fastPredictors.add(new SumOfGaussianPredictor(chvm, standardDevs[i]));
-		}
+		}*/
 		
 		//double[] ridges = {0.5, 0.2, 0.1, 0.01, 0.001};
 		
-		fastPredictors.add(new KMeansPredictor(3, vectorMaker, "VectorMaker: " + vectorMaker.name()));
-		fastPredictors.add(new KMeansPredictor(5, vectorMaker, "VectorMaker: " + vectorMaker.name()));
+		//fastPredictors.add(new KMeansPredictor(3, vectorMaker, "VectorMaker: " + vectorMaker.name()));
+		//fastPredictors.add(new KMeansPredictor(5, vectorMaker, "VectorMaker: " + vectorMaker.name()));
 
-		fastPredictors.add(new KMeansPredictor(3, chvm, "VectorMaker: " + chvm.name()));
+		//fastPredictors.add(new KMeansPredictor(3, chvm, "VectorMaker: " + chvm.name()));
 		//fastPredictors.add(new KMeansPredictor(5, chvm, "VectorMaker: " + chvm.name()));
 		
 		/*for(VectorMaker<Issue> vectorMaker: vectorMakers) {
@@ -257,6 +260,16 @@ public class Project {
 
 		fastPredictors.add(new ExpectedSalesPredictor());
 		fastPredictors.add(new OldExpectedSalesPredictor());
+
+		fastPredictors.add(new TimePolynomialPredictor(1, 50));
+		fastPredictors.add(new TimePolynomialPredictor(2, 300));
+		fastPredictors.add(new TimePolynomialPredictor(1, null));
+		fastPredictors.add(new TimePolynomialPredictor(2, null));
+		fastPredictors.add(new TimePredictorSeasonal(2, 5));
+		fastPredictors.add(new TimePredictorSeasonal(2, 10));
+		fastPredictors.add(new TimePredictorSeasonal(2, 20));
+		fastPredictors.add(new TimePredictorSeasonal(2, 30));
+		
 		return fastPredictors;
 
 	}
