@@ -70,7 +70,7 @@ public class ProjectFindBestTimeEstimator {
 		ps.add(new TimePredictorSeasonal(2, 4));
 		ps.add(new TimePredictorSeasonal(2, 8));
 		ps.add(new TimePredictorSeasonal(1, 8.15));
-		ps.add(new TimePredictorSeasonal(2, 8.15));  //**This is the best one!!!!
+		ps.add(new TimePredictorSeasonal(2, 8.15));  //  **This is the best one!!!!
 		ps.add(new TimePredictorSeasonal(3, 8.15));
 		ps.add(new TimePredictorSeasonal(2, 16));
 		ps.add(new TimePredictorSeasonal(2, 32));
