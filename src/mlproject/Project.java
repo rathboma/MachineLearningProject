@@ -11,9 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mlproject.abstractMath.PolynomialFitter;
 import mlproject.abstractMath.VectorMaker;
-import mlproject.abstractMath.PolynomialFitter.Polynomial;
 import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker;
 import mlproject.abstractMath.vectorMaker.ColorHistogramVectorMaker;
 import mlproject.abstractMath.vectorMaker.PolynomialVectorMaker;
@@ -22,8 +20,8 @@ import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.LinearRegressionPredictor;
 import mlproject.predictors.OldExpectedSalesPredictor;
-import mlproject.predictors.TimePolynomialPredictor;
-import mlproject.predictors.TimePredictorSeasonal;
+import mlproject.predictors.estimators.TimePolynomialEstimator;
+import mlproject.predictors.estimators.TimePredictorSeasonal;
 import mlproject.testing.BatchPredictionResults;
 import mlproject.testing.DataLoader;
 import mlproject.testing.DataSetType;
@@ -261,10 +259,10 @@ public class Project {
 		fastPredictors.add(new ExpectedSalesPredictor());
 		fastPredictors.add(new OldExpectedSalesPredictor());
 
-		fastPredictors.add(new TimePolynomialPredictor(1, 50));
-		fastPredictors.add(new TimePolynomialPredictor(2, 300));
-		fastPredictors.add(new TimePolynomialPredictor(1, null));
-		fastPredictors.add(new TimePolynomialPredictor(2, null));
+		fastPredictors.add(new TimePolynomialEstimator(1));
+		fastPredictors.add(new TimePolynomialEstimator(2));
+		fastPredictors.add(new TimePolynomialEstimator(1));
+		fastPredictors.add(new TimePolynomialEstimator(2));
 		fastPredictors.add(new TimePredictorSeasonal(2, 5));
 		fastPredictors.add(new TimePredictorSeasonal(2, 10));
 		fastPredictors.add(new TimePredictorSeasonal(2, 20));

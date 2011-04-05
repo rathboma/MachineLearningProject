@@ -23,6 +23,7 @@ public class Issue{
 	@IgnoreField public String mImagePath;
 	public boolean imageAttached;
 	
+	public Double expectedSales;
 	public Double sales;
 	public Long Issue;
 	public Date date;
