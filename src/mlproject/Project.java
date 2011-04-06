@@ -70,7 +70,7 @@ public class Project {
 		System.out.println("Current Date Prediction: " + expectedSalesPredictor.Predict(predictMe));
 		System.out.println();
 		try {
-			predictMe.extractImageFeatures("./data/newissue.jpg");
+			predictMe.extractImageFeatures("./data/");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
