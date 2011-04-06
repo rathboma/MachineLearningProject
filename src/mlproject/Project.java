@@ -70,12 +70,7 @@ public class Project {
 		System.out.println("Current Date Prediction: " + expectedSalesPredictor.Predict(predictMe));
 		System.out.println();
 		try {
-			if (new File("/home/mes592/newissue.jpg").exists()) {
-				predictMe.extractImageFeatures("/home/mes592/newissue.jpg");
-			}
-			else {
-				predictMe.extractImageFeatures("/Users/matthew/Downloads/newissue.jpg");
-			}
+			predictMe.extractImageFeatures("./data/newissue.jpg");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
