@@ -73,34 +73,34 @@ public class Issue{
         return ca1.get(Calendar.DAY_OF_YEAR);
 	}
 	
-	public Double getOldExpectedSales() {
-		Long time = getTime();
-		if (time == null) return null;
-		return 37676.1 + 3.37277*time - 0.00400981*time*time;
-	}
+	//public Double getOldExpectedSales() {
+	//	Long time = getTime();
+	//	if (time == null) return null;
+	//	return 37676.1 + 3.37277*time - 0.00400981*time*time;
+	//}
 	
 	public Double getLogSales() {
 		return Math.log(sales);
 	}
 	
-	public Double getExpectedSales() {
-		Long time = getTime();
-		if (time == null) return null;
-		return Math.exp(getExpectedLogSales());
-	}
+	//public Double getExpectedSales() {
+	//	Long time = getTime();
+	//	if (time == null) return null;
+	//	return Math.exp(getExpectedLogSales());
+	//}
 		
-	public double getLogPercent() {
-		return Math.log(getPercent());
-	}
+	//public double getLogPercent() {
+	//	return Math.log(getPercent());
+	//}
 	
-	public double getDirection(){
-		return getLogPercent() >= 0 ? 1 : -1;
-	}
+	//public double getDirection(){
+	//	return getLogPercent() >= 0 ? 1 : -1;
+	//}
 	
-	private double getPercent(){
-		if(sales != null && getExpectedSales() != null) return sales / getExpectedSales();
-		return 1;
-	}
+	//private double getPercent(){
+	//	if(sales != null && getExpectedSales() != null) return sales / getExpectedSales();
+	//	return 1;
+	//}
 	
 	
 	public void extractImageFeatures(String img) throws IOException{

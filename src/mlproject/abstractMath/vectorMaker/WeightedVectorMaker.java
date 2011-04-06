@@ -4,13 +4,13 @@ import mlproject.Utils;
 import mlproject.abstractMath.VectorMaker;
 import mlproject.models.Issue;
 
-public class WeightedVectorMaker implements VectorMaker<Issue> {
+@Deprecated public class WeightedVectorMaker implements VectorMaker<Issue> {
 	
 	@Override
 	public Double[] toVector(Issue issue) {
 		Double[] v = new Double[vectorSize()];
         
-		v[0] = (issue.getExpectedSales() == null)? 36041: issue.getExpectedSales();
+		//v[0] = (issue.getExpectedSales() == null)? 36041: issue.getExpectedSales();
 		v[1] = (double) issue.date.getTime();
 		v[2] = Utils.toDouble(issue.astronomyAndCosmology);
 		v[3] = Utils.toDouble(issue.earthScience);

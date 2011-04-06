@@ -41,7 +41,7 @@ public class Importer {
 			
 			try {
 				Issue newIssue = makeIssue(csvFields, csvValues, imagePath);
-				if (newIssue.getExpectedSales() != null) {
+				if (newIssue.date != null) {
 					issues.add(newIssue);
 				}
 			} catch (Exception e) {

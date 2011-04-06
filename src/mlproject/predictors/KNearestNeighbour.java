@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import mlproject.ISalesPredictor;
 import mlproject.abstractMath.Metric;
 import mlproject.abstractMath.NaturalNearestNeighbor;
 import mlproject.abstractMath.NearestNeighborFunction;
@@ -19,13 +20,15 @@ public class KNearestNeighbour extends BasePredictor{
 	
 	private Collection<Issue> issues = new ArrayList<Issue>();
 	
-	public KNearestNeighbour(NearestNeighborFunction<Issue> nnf, int k, String id) {
+	public KNearestNeighbour(NearestNeighborFunction<Issue> nnf, int k, String id, ISalesPredictor timeEstimator) {
+		super(timeEstimator);
 		this.nnf = nnf;
 		this.k = k;
 		this.id = id;
 	}
 	
-	public KNearestNeighbour(Metric<Issue> measure, int k, String id) {
+	public KNearestNeighbour(Metric<Issue> measure, int k, String id, ISalesPredictor timeEstimator) {
+		super(timeEstimator);
 		this.nnf = new NaturalNearestNeighbor<Issue>(measure);
 		this.k = k;
 		this.id = id;
@@ -37,14 +40,14 @@ public class KNearestNeighbour extends BasePredictor{
 		
 		double totalPercent = 0;
 		for(Issue neighbor: neighbors) {
-			totalPercent += neighbor.getLogPercent();
+			totalPercent += Math.log(neighbor.sales) - timeEstimator.Predict(neighbor);
 		}
 		
 		return totalPercent / neighbors.size() ;
 	}
 
 	@Override
-	public void Train(Collection<Issue> issues) {
+	public void trainPredictor(Collection<Issue> issues) {
 		this.issues = issues;
 	}
 

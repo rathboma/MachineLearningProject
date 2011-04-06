@@ -2,9 +2,14 @@ package mlproject.predictors;
 
 import java.util.Collection;
 
+import mlproject.ISalesPredictor;
 import mlproject.models.Issue;
 
 public class ExpectedSalesPredictor extends BasePredictor {
+
+	public ExpectedSalesPredictor(ISalesPredictor timeEstimator) {
+		super(timeEstimator);
+	}
 
 	@Override
 	public double Predict(Issue issue) {
@@ -12,7 +17,7 @@ public class ExpectedSalesPredictor extends BasePredictor {
 	}
 
 	@Override
-	public void Train(Collection<Issue> issues) {}
+	public void trainPredictor(Collection<Issue> issues) {}
 
 	@Override
 	public String name() {

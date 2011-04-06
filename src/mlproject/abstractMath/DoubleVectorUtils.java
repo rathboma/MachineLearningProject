@@ -198,10 +198,14 @@ public class DoubleVectorUtils {
 		double scale = Math.pow(2*Math.PI, ((double)k)/2) * Math.sqrt(corvarDet);
 		
 		Double[] offMean = minusVectors(v, mean);
-		double val = Math.exp(-.5*dot(offMean, matrixMultiplication(inverseCovar, offMean)));
+		double dot = dot(offMean, matrixMultiplication(inverseCovar, offMean));
+		double val = Math.exp(-.5*dot);
 		
 		if (val == 0) {
-			System.out.println("Bad Bad Bad");
+			System.out.println("Bad Bad Bad " + val + " " + dot);
+			//System.out.println(-.5 * dot);
+			//System.out.println(Math.exp(-.5 * dot));
+			//System.out.println(Math.exp(-100));
 		}
 		
 		return val/scale;

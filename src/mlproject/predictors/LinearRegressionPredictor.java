@@ -1,12 +1,13 @@
 package mlproject.predictors;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 
+import mlproject.ISalesPredictor;
+import mlproject.Project;
 import mlproject.abstractMath.VectorMaker;
-import mlproject.abstractMath.vectorMaker.WeightedVectorMaker;
+import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker;
 import mlproject.models.Issue;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Attribute;
@@ -21,12 +22,14 @@ public class LinearRegressionPredictor extends BasePredictor {
 	final FastVector attributes;
 	double mRidge = 0;
 	
-	public LinearRegressionPredictor(double ridge, VectorMaker<Issue> vectorMaker) {
+	public LinearRegressionPredictor(double ridge, VectorMaker<Issue> vectorMaker, ISalesPredictor timeEstimator) {
+		super(timeEstimator);
 		System.out.println();
 		mRidge = ridge;
 		this.vectorMaker = vectorMaker;
 		attributes = new FastVector(vectorMaker.vectorSize() + 1);
 		for(int i = 0; i < vectorMaker.vectorSize() + 1; i++) {
+			System.out.println("BB " + i);
 			attributes.addElement(new Attribute(Integer.toString(i)));
 		}
 	}
@@ -35,7 +38,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 	public double Predict(Issue issue) {
 		try {
 			double predicted = linearRegression.classifyInstance(getWekaInstance(issue));
-			double actual = issue.getLogPercent();
+			double actual = Math.log(issue.sales) - timeEstimator.Predict(issue);
 			//System.out.println("actual percent " + actual + " predicted: " + predicted);
 			return linearRegression.classifyInstance(getWekaInstance(issue));
 		} catch (Exception e) {
@@ -69,7 +72,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 		}
 		
 
-		LinearRegressionPredictor p = new LinearRegressionPredictor(0, new WeightedVectorMaker());
+		LinearRegressionPredictor p = new LinearRegressionPredictor(0, new AverageColorVectorMaker(), Project.expectedSalesPredictor);
 		System.out.println("size: " + p.attributes.size());
 		Instances instances = new Instances("Issue", p.attributes, 300);
 
@@ -81,7 +84,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 	}
 	
 	@Override
-	public void Train(Collection<Issue> issues) {
+	public void trainPredictor(Collection<Issue> issues) {
 		FastVector fv = new FastVector(vectorMaker.vectorSize() + 1);
 
 		for(int i = 0; i < vectorMaker.vectorSize() + 1; i++) {
@@ -126,7 +129,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 			v[i] = attributeData[i];
 		}
 		
-		v[attributeData.length] = issue.getLogPercent();
+		v[attributeData.length] =  Math.log(issue.sales) - timeEstimator.Predict(issue);
 
 		return getWekaInstance(v);
 	}

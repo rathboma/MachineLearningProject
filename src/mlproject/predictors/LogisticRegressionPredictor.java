@@ -10,6 +10,8 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 
+import mlproject.ISalesPredictor;
+import mlproject.Project;
 import mlproject.Utils;
 import mlproject.abstractMath.VectorMaker;
 import mlproject.models.IgnoreField;
@@ -24,7 +26,8 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	VectorMaker vectorMaker;
 	Instances globalInstances;
 	double ridge;
-	public LogisticRegressionPredictor(double ridge, VectorMaker maker) {
+	public LogisticRegressionPredictor(double ridge, VectorMaker maker, ISalesPredictor timeEstimator) {
+		super(timeEstimator);
 		vectorMaker = maker;
 		this.ridge = ridge;
 		Field[] fs = Issue.class.getFields();
@@ -35,7 +38,7 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	@Override
 	public double Predict(Issue issue) {
 		try {
-			double actual = issue.getLogPercent();
+			//double actual = Math.log(issue.sales) - timeEstimator.Predict(issue);
 			double predicted = logistic.classifyInstance(getWekaInstance(issue)) == 0 ? 1 : -1; 
 			//System.out.println("actual percent " + actual + " predicted: " + predicted);
 			return predicted; 
@@ -51,7 +54,7 @@ public class LogisticRegressionPredictor extends BasePredictor {
 			System.out.println(fs[i].getName());
 		}
 		
-		LogisticRegressionPredictor p = new LogisticRegressionPredictor(1, null);
+		LogisticRegressionPredictor p = new LogisticRegressionPredictor(1, null, Project.expectedSalesPredictor);
 		System.out.println("size: " + p.attributes.size());
 		Instances instances = new Instances("Issue", p.attributes, 300);
 
@@ -63,7 +66,7 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	}
 	
 	@Override
-	public void Train(Collection<Issue> issues) {
+	public void trainPredictor(Collection<Issue> issues) {
 		FastVector fv = new FastVector(vectorMaker.vectorSize() + 1);
 
 		for(int i = 0; i < vectorMaker.vectorSize(); i++) {
@@ -101,7 +104,7 @@ public class LogisticRegressionPredictor extends BasePredictor {
 	}
 	
 	public Instance getWekaInstance(Issue issue) {
-Double[] attributeData = vectorMaker.toVector(issue);
+		Double[] attributeData = vectorMaker.toVector(issue);
 		
 		Double[] v = new Double[attributeData.length];
 		
@@ -110,7 +113,9 @@ Double[] attributeData = vectorMaker.toVector(issue);
 			v[i] = attributeData[i];
 		}
 		
-		String topValue = issue.getLogPercent() >= 0 ? "1" : "-1";
+		String topValue =  
+			(issue.sales == null)? "1":
+			((Math.log(issue.sales) - timeEstimator.Predict(issue)) >= 0 ? "1" : "-1");
 		
 		Instance instance = new Instance(v.length + 1);
 		instance.setDataset(globalInstances);

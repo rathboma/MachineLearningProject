@@ -13,11 +13,10 @@ public class ProjectFindBestColor {
 	final static int COLOR_HOPPER = 4;
 	
 	public static void main(String[] args){
-		
 		Collection<Issue> issues = Project.loadIssues();
 		
 		VectorMaker<Issue> vm = new AverageColorVectorMaker();
-		ISalesPredictor predictor = new SumOfGaussianPredictor(vm, 0.5);
+		ISalesPredictor predictor = new SumOfGaussianPredictor(vm, 0.5, Project.expectedSalesPredictor);
 		
 		predictor.Train(issues);
     

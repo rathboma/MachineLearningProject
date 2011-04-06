@@ -1,6 +1,8 @@
 package mlproject.predictors.estimators;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import mlproject.ISalesPredictor;
 import mlproject.models.Issue;
@@ -18,29 +20,33 @@ public class TimePredictorSeasonal implements ISalesPredictor {
 	
 	@Override
 	public double Predict(Issue issue) {
-		tpp.Predict(issue);
-		
-		long thisTime = issue.getTime();
-		
-		double totalSeasonalEffect = 0;
-		double totalWeight = 0;
-		
-		for(Issue anotherIssue: issues) {
-			long anotherTime = anotherIssue.getTime();
-			double radianDifference = 2 * Math.PI * ((double)(thisTime - anotherTime)) / 365;
+		if (!predictionCache.containsKey(issue)) {
+			long thisTime = issue.getTime();
 			
-			double weight = Math.exp(wrappedOneOverVariance * Math.cos(radianDifference));
-
-			totalWeight += weight;
-			totalSeasonalEffect += (anotherIssue.getLogSales() - tpp.Predict(anotherIssue)) * weight;
+			double totalSeasonalEffect = 0;
+			double totalWeight = 0;
+			
+			for(Issue anotherIssue: issues) {
+				long anotherTime = anotherIssue.getTime();
+				double radianDifference = 2 * Math.PI * ((double)(thisTime - anotherTime)) / 365;
+				
+				double weight = Math.exp(wrappedOneOverVariance * Math.cos(radianDifference));
+	
+				totalWeight += weight;
+				totalSeasonalEffect += (anotherIssue.getLogSales() - tpp.Predict(anotherIssue)) * weight;
+			}
+			
+			double predictedSeasonalEffect = totalSeasonalEffect / totalWeight;
+			double logSalesPrediction = tpp.Predict(issue) + predictedSeasonalEffect;
+		
+			predictionCache.put(issue, logSalesPrediction);
 		}
 		
-		double predictedSeasonalEffect = totalSeasonalEffect / totalWeight;
+		return predictionCache.get(issue);
 
-		double logSalesPrediction = tpp.Predict(issue) + predictedSeasonalEffect;
-		
-		return logSalesPrediction;
 	}
+	
+	Map<Issue, Double> predictionCache = new HashMap<Issue, Double>();
 
 	@Override
 	public void Train(Collection<Issue> issues) {

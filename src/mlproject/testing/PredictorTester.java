@@ -11,6 +11,12 @@ import mlproject.models.Issue;
 
 public class PredictorTester{
 	
+	final ISalesPredictor timeEstimator;
+	
+	public PredictorTester(ISalesPredictor timePredictor) {
+		this.timeEstimator = timePredictor;
+	}
+	
 	/**
 	 * @param predictor
 	 * @param issues
@@ -85,13 +91,14 @@ public class PredictorTester{
 			everythingClone.remove(testSample);
 			predictor.Train(everythingClone);
 			double logPercentPrediction = predictor.Predict(testSample);
-			double actualLogPercent = testSample.getLogPercent();
+			double actualLogPercent =  Math.log(testSample.sales) - timeEstimator.Predict(testSample);
 			if ((logPercentPrediction >= 0) == (actualLogPercent >= 0)) correctDirection++;
 			double loss = Math.pow(logPercentPrediction - actualLogPercent, 2);
 			totalLoss += loss;
 			//now it has everything in it again
 			everythingClone.add(testSample);
-		}	
+		}
+		
 		System.out.println();
 		
 		BatchPredictionResults testResults = new BatchPredictionResults();

@@ -2,20 +2,22 @@ package mlproject.predictors;
 
 import java.util.Collection;
 
+import mlproject.ISalesPredictor;
 import mlproject.abstractMath.DoubleVectorUtils;
 import mlproject.abstractMath.VectorMaker;
 import mlproject.models.Issue;
 
 
 
-public class SumOfGaussianPredictor extends BasePredictor{
+public class SumOfGaussianPredictor extends BasePredictor {
 
 	final public VectorMaker<Issue> vectorMaker;
 	final public double standardDev;
 	
 	private Collection<Issue> issues;
 	
-	public SumOfGaussianPredictor(VectorMaker<Issue> vectorMaker, double standardDev) {
+	public SumOfGaussianPredictor(VectorMaker<Issue> vectorMaker, double standardDev, ISalesPredictor timeEstimator) {
+		super(timeEstimator);
 		this.vectorMaker = vectorMaker;
 		this.standardDev = standardDev;
 	}
@@ -37,7 +39,7 @@ public class SumOfGaussianPredictor extends BasePredictor{
 		for(Issue knownIssue: issues) {
 			mixture[i] = DoubleVectorUtils.computeGaussian(v, vectorMaker.toVector(knownIssue), covar);
 			mixtureSum += mixture[i];
-			prediction += mixture[i] * knownIssue.getLogPercent();
+			prediction += mixture[i] * (Math.log(knownIssue.sales) - timeEstimator.Predict(knownIssue));
 			i++;
 		}
 		
@@ -46,13 +48,13 @@ public class SumOfGaussianPredictor extends BasePredictor{
 	}
 
 	@Override
-	public void Train(Collection<Issue> issues) {
+	public void trainPredictor(Collection<Issue> issues) {
 		this.issues = issues;
 	}
 
 	@Override
 	public String name() {
-		return "Sum Of Gaussian Predictor, sd = " + standardDev;
+		return "Sum Of Gaussian Predictor, sd = " + standardDev + " VM: " + vectorMaker.name();
 	}
 	
 	

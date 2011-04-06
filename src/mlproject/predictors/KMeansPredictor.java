@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
+import mlproject.ISalesPredictor;
 import mlproject.abstractMath.DoubleVectorUtils;
 import mlproject.abstractMath.VectorMaker;
 import mlproject.models.Issue;
@@ -18,7 +19,8 @@ public class KMeansPredictor extends BasePredictor {
 	
 	final String id;
 	
-	public KMeansPredictor(int k, VectorMaker<Issue> maker, String id){
+	public KMeansPredictor(int k, VectorMaker<Issue> maker, String id, ISalesPredictor timeEstimator){
+		super(timeEstimator);
 		this.k = k;
 		this.vectorMaker = maker;
 		this.id = id;
@@ -61,7 +63,9 @@ public class KMeansPredictor extends BasePredictor {
 				if(respon == 1.0) {
 					Double[] issue = issues[j];
 					prototypes[i] = DoubleVectorUtils.add(prototypes[i], issue);
-					prototypePredictions[i] += issueObjects[j].getLogPercent(); 
+					
+					Issue issueObject = issueObjects[j];
+					prototypePredictions[i] += Math.log(issueObject.sales) - timeEstimator.Predict(issueObject); 
 				}	
 			} // end j
 			DoubleVectorUtils.divideAll(prototypes[i], number);
@@ -70,7 +74,7 @@ public class KMeansPredictor extends BasePredictor {
 	}
 	
 	@Override
-	public void Train(Collection<Issue> issues) {
+	public void trainPredictor(Collection<Issue> issues) {		
 		VectorMaker<Issue> maker = vectorMaker;
 		Issue[] allIssues = new Issue[issues.size()];
 		
