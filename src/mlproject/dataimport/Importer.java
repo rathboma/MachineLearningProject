@@ -73,6 +73,8 @@ public class Importer {
 		for(int i = 0; i < titles.length; i++){
 			Importer.importField(titles[i], issue, data[i]);
 		}
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		issue.date = dateFormat.parse(issue.dateString);
 		
 		return issue;
 	}

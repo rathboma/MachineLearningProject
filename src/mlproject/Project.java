@@ -178,35 +178,50 @@ public class Project {
 			File[] images = null;
 			
 			File testEnv = new File("/Users/matthew/");
-			if (testEnv.exists()) {
-				issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
-				images = Importer.getImages("/Users/matthew/Pictures/cover_images/");
-			} else {
-				//issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
-				issues = Importer.getIssues("/home/mes592/New Scientist.csv");
-				images = Importer.getImages("/home/mes592/images/cover_images/");
-			}
-
-			HashMap<File, Date> dateMappings = Importer.extractIssueDates(images);
-			System.out.println("Extracting image features...");
-			Set<String> errorSet = new HashSet<String>();
-			for(Issue issue: issues) {
-				System.out.print(".");
-				for(File image : images){
-					if(issue.shouldOwn(dateMappings.get(image))){
-						try {
-							issue.extractImageFeatures(image.getAbsolutePath());
-							//System.out.println("Log Odds RGB avg: " + issue.logOddsAvgRed + " " + issue.logOddsAvgGreen + " " + issue.logOddsAvgBlue);
-						} catch(IOException e){
-							errorSet.add(image.getName() + " Issue: " + issue.Issue);
-						}
-						break;
-					}
+			issues = Importer.getIssues("./data/ns.csv");
+//			if (testEnv.exists()) {
+//				issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
+//				images = Importer.getImages("/Users/matthew/Pictures/cover_images/");
+//			} else {
+//				//issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
+//				issues = Importer.getIssues("/home/mes592/New Scientist.csv");
+//				images = Importer.getImages("/home/mes592/images/cover_images/");
+//			}
+			
+			for(Issue i : issues){
+				try{
+					i.extractImageFeatures("./data/images/");
+				}catch(IOException e){
+					System.out.println("could not get image data for issue " + i.dateString);
+				}catch(Exception e){
+					System.out.println(e);
 				}
+				
+				
 			}
 			
-			System.out.println("Errors in the following images:");
-			for(String err: errorSet) System.out.println(err);
+			
+
+//			HashMap<File, Date> dateMappings = Importer.extractIssueDates(images);
+//			System.out.println("Extracting image features...");
+//			Set<String> errorSet = new HashSet<String>();
+//			for(Issue issue: issues) {
+//				System.out.print(".");
+//				for(File image : images){
+//					if(issue.shouldOwn(dateMappings.get(image))){
+//						try {
+//							issue.extractImageFeatures(image.getAbsolutePath());
+//							//System.out.println("Log Odds RGB avg: " + issue.logOddsAvgRed + " " + issue.logOddsAvgGreen + " " + issue.logOddsAvgBlue);
+//						} catch(IOException e){
+//							errorSet.add(image.getName() + " Issue: " + issue.Issue);
+//						}
+//						break;
+//					}
+//				}
+//			}
+			
+//			System.out.println("Errors in the following images:");
+//			for(String err: errorSet) System.out.println(err);
 			System.out.println();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
