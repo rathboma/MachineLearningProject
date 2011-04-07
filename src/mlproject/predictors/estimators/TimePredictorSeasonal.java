@@ -9,7 +9,7 @@ import mlproject.models.Issue;
 
 public class TimePredictorSeasonal implements ISalesPredictor {
 
-	private final TimePolynomialEstimator tpp;
+	public final TimePolynomialEstimator tpp;
 	final double wrappedOneOverVariance;
 	Collection<Issue> issues;
 	
@@ -37,7 +37,9 @@ public class TimePredictorSeasonal implements ISalesPredictor {
 			}
 			
 			double predictedSeasonalEffect = totalSeasonalEffect / totalWeight;
-			double logSalesPrediction = tpp.Predict(issue) + predictedSeasonalEffect;
+			double predictedLongtermEffect = tpp.Predict(issue);
+			//System.out.println("Long term: " + predictedLongtermEffect + " :: " + thisTime);
+			double logSalesPrediction = predictedLongtermEffect + predictedSeasonalEffect;
 		
 			predictionCache.put(issue, logSalesPrediction);
 		}

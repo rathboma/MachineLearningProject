@@ -11,7 +11,7 @@ public class TimePolynomialEstimator implements ISalesPredictor {
 
 	public final int degree;
 	Collection<Issue> issues;
-	Polynomial bestFit;
+	public Polynomial bestFit;
 	
 	public TimePolynomialEstimator(int degree) {
 		this.degree = degree;
