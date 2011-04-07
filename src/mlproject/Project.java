@@ -37,7 +37,7 @@ import mlproject.testing.PredictorTester;
 
 public class Project {
 	
-	public final static ISalesPredictor expectedSalesPredictor = new TimePredictorSeasonal(2, 8.15);
+	public final static TimePredictorSeasonal expectedSalesPredictor = new TimePredictorSeasonal(2, 8.15);
 	
 	public static void main(String[] args){
 		Collection<Issue> issues = loadIssues();
@@ -68,7 +68,16 @@ public class Project {
 
 		System.out.println("done loading issues");
 		
+		System.out.println(expectedSalesPredictor.tpp.bestFit.toString());
+		
+		for(int i = -4; i < 24; i++) {
+			Issue predict = new Issue();
+			predict.date = new Date(System.currentTimeMillis() + (long)1000*60*60*24*365*i);
+			System.out.println(Math.exp(expectedSalesPredictor.Predict(predict)));
+		}
+		
 		Issue predictMe = new Issue();
+
 		predictMe.dateString = "2011-04-09";
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		try {
@@ -79,6 +88,7 @@ public class Project {
 		}
 		
 		System.out.println("Current Date Prediction: " + expectedSalesPredictor.Predict(predictMe));
+
 		System.out.println();
 		try {
 			predictMe.extractImageFeatures("./data/");
