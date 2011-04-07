@@ -4,3 +4,4 @@ bin
 .project
 small_covers_test/*
 small_covers_training/*
+data/ns.csv

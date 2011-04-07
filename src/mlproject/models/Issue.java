@@ -27,6 +27,7 @@ public class Issue{
 	public Double sales;
 	public Long Issue;
 	public Date date;
+	public String dateString;
 	public String heading;
 	public Boolean aboveExpected;
 	public Boolean earthScience, astronomyAndCosmology, physics, technology, neuroSciencePsychology;
@@ -103,10 +104,12 @@ public class Issue{
 	//}
 	
 	
-	public void extractImageFeatures(String img) throws IOException{
+	public void extractImageFeatures(String folder) throws IOException{
+		String img = folder + this.dateString + ".jpg";
 		imageAttached = true;
 		File file= new File(img);
 		this.imageFile = file.getName();
+		System.out.println("extracting image features for " + this.dateString);
 	    BufferedImage image = ImageIO.read(file);
 	    int maxX = image.getWidth();
 	    int maxY = image.getHeight();
