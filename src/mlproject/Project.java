@@ -2,6 +2,9 @@ package mlproject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +52,7 @@ public class Project {
 			totalSqDev += deviation*deviation;
 		}
 		System.out.println("Average Absolute Error: " + totalDev/issues.size());
-		System.out.println("Standard Deviation: " + Math.sqrt(totalSqDev/issues.size()));
+		System.out.println("Standard Deviation of the difference: " + Math.sqrt(totalSqDev/issues.size()));
 		
 //		try{
 //			File f = new File("/Users/matthew/mapping.txt");
@@ -84,7 +87,18 @@ public class Project {
 		predictMe.date = new Date(System.currentTimeMillis());
 		
 		//if (true) return;
+
+		predictMe.dateString = "2011-04-09";
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			predictMe.date = dateFormat.parse(predictMe.dateString);
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
+		System.out.println("Current Date Prediction: " + expectedSalesPredictor.Predict(predictMe));
+
 		System.out.println();
 		try {
 			predictMe.extractImageFeatures("./data/");
@@ -92,6 +106,8 @@ public class Project {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
 		
 		DataLoader loader = new DataLoader(issues, 0); //% test samples.
 
@@ -121,9 +137,6 @@ public class Project {
         total = total / allPredictors.size();
         System.out.println("average: " + total);
         
-        
-			
-		        // 
         
         PredictorTester tester = new PredictorTester(expectedSalesPredictor);
         final Map<ISalesPredictor, Map<DataSetType, BatchPredictionResults>> results = 
