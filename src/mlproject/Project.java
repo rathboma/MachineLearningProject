@@ -62,6 +62,13 @@ public class Project {
 //
 //		if(true) return;
 //		
+		//for(Issue issue: issues) {
+		//	System.out.println(issue.getTime() + "\t" + (issue.getLogSales() - expectedSalesPredictor.Predict(issue))
+		//			+ "\t" + issue.avgRed+ "\t" + issue.avgGreen+ "\t" + issue.avgBlue);
+		//}
+		
+		//if (true) return;
+		
 
 		System.out.println("done loading issues");
 		
@@ -76,7 +83,7 @@ public class Project {
 		Issue predictMe = new Issue();
 		predictMe.date = new Date(System.currentTimeMillis());
 		
-		if (true) return;
+		//if (true) return;
 		
 		System.out.println();
 		try {
@@ -266,11 +273,11 @@ public class Project {
 		VectorMaker<Issue> acvm = new AverageColorVectorMaker();
 		VectorMaker<Issue> chvm = new ColorHistogramVectorMaker();
 		
-		//double[] standardDevs = {0.1, 0.2, 0.5, 1, 2, 5, 10, 30, 100};
+		///double[] standardDevs = {0.1, 0.2, 0.5, 1, 2, 5, 10, 30, 100};
 		double[] standardDevs = {0.5,  2, 10};
 		for(int i = 0; i < standardDevs.length; i++) {
 			fastPredictors.add(new SumOfGaussianPredictor(acvm, standardDevs[i], expectedSalesPredictor));
-			fastPredictors.add(new SumOfGaussianPredictor(chvm, standardDevs[i], expectedSalesPredictor));
+			//fastPredictors.add(new SumOfGaussianPredictor(chvm, standardDevs[i], expectedSalesPredictor));
 		}
 		
 		//double[] ridges = {0.5, 0.2, 0.1, 0.01, 0.001};

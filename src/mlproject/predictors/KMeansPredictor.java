@@ -121,7 +121,20 @@ public class KMeansPredictor extends BasePredictor {
 			firstLoop = false;
 		}
 		
-		// TODO Auto-generated method stub
+		//Output
+		if ((k == 3) && (vectorMaker.vectorSize() == 3)) {
+			//System.out.println("Trained k=" +k + " means predictor");
+			for(int i = 0; i < k; i++) {
+				for(int j = 0; j < prototypes[i].length; j++) {
+					double colorLogOdds = prototypes[i][j];
+					double eToThat = Math.exp(colorLogOdds);
+					double color = 256 * eToThat / (eToThat + 1);
+					//System.out.print(color + " ");
+				}
+				//System.out.print("Predicts: " + prototypePredictions[i]);
+				//System.out.println("\n");
+			}
+		}
 		
 	}
 
