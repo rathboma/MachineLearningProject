@@ -85,8 +85,7 @@ public class Project {
 		predictMe.date = new Date(System.currentTimeMillis());
 		
 		//if (true) return;
-
-		predictMe.dateString = "2011-04-16";
+		predictMe.dateString = "2011-04-23";
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			predictMe.date = dateFormat.parse(predictMe.dateString);
@@ -136,7 +135,7 @@ public class Project {
         total = total / allPredictors.size();
         System.out.println("average: " + total);
         
-        
+        if(true)return;
         PredictorTester tester = new PredictorTester(expectedSalesPredictor);
         final Map<ISalesPredictor, Map<DataSetType, BatchPredictionResults>> results = 
         	new HashMap<ISalesPredictor, Map<DataSetType, BatchPredictionResults>>();
@@ -326,7 +325,8 @@ public class Project {
 		VectorMaker<Issue> pvm = new PolynomialVectorMaker<Issue>(3, chvm);
 		//fastPredictors.add(new LinearRegressionPredictor(0.2, pvm, expectedSalesPredictor));
 
-		fastPredictors.add(new ExpectedSalesPredictor(expectedSalesPredictor));
+		//shouldn't be in here!!
+		//fastPredictors.add(new ExpectedSalesPredictor(expectedSalesPredictor));
 		
 		return fastPredictors;
 
