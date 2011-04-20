@@ -11,10 +11,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import mlproject.abstractMath.VectorMaker;
 import mlproject.abstractMath.impl.EuclideanMetric;
@@ -26,9 +24,9 @@ import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
 import mlproject.predictors.KMeansPredictor;
 import mlproject.predictors.KNearestNeighbour;
-import mlproject.predictors.LinearRegressionPredictor;
 import mlproject.predictors.LogisticRegressionPredictor;
 import mlproject.predictors.SumOfGaussianPredictor;
+import mlproject.predictors.WeightedMajorityPredictor;
 import mlproject.predictors.estimators.TimePredictorSeasonal;
 import mlproject.testing.BatchPredictionResults;
 import mlproject.testing.DataLoader;
@@ -88,7 +86,7 @@ public class Project {
 		
 		//if (true) return;
 
-		predictMe.dateString = "2011-04-09";
+		predictMe.dateString = "2011-04-16";
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			predictMe.date = dateFormat.parse(predictMe.dateString);
@@ -115,6 +113,7 @@ public class Project {
 		//if (true) return;
 		
 		List<ISalesPredictor> fastPredictors = getFastPredictors();
+		//List<ISalesPredictor> fastPredictors = getWeightedMajorityPredictors();
 		System.out.println("fetched " + fastPredictors.size() + " fast predictor combinations");
 
 		List<ISalesPredictor> slowPredictors = getSlowPredictors();
@@ -131,7 +130,7 @@ public class Project {
             result = predictor.Predict(predictMe);
             if(result > 0) result = 1.0;
             if(result <= 0) result = -1.0;
-            System.out.println("predicted " + result);
+            System.out.println(predictor.name() + " predicted " + result);
             total += result;
         }
         total = total / allPredictors.size();
@@ -287,25 +286,29 @@ public class Project {
 		VectorMaker<Issue> chvm = new ColorHistogramVectorMaker();
 		
 		///double[] standardDevs = {0.1, 0.2, 0.5, 1, 2, 5, 10, 30, 100};
-		double[] standardDevs = {0.5,  2, 10};
+		//double[] standardDevs = {0.5,  2, 10};
+		double[] standardDevs = {0.5};
 		for(int i = 0; i < standardDevs.length; i++) {
 			fastPredictors.add(new SumOfGaussianPredictor(acvm, standardDevs[i], expectedSalesPredictor));
 			//fastPredictors.add(new SumOfGaussianPredictor(chvm, standardDevs[i], expectedSalesPredictor));
 		}
 		
 		//double[] ridges = {0.5, 0.2, 0.1, 0.01, 0.001};
-		double[] ridges = {0.2, 0.1, 0.005};
+		//double[] ridges = {0.2, 0.1, 0.005};
+		double[] ridges = {0.2};
 		
 		fastPredictors.add(new KMeansPredictor(3, acvm, "VectorMaker: " + acvm.name(), expectedSalesPredictor));
 		fastPredictors.add(new KMeansPredictor(5, acvm, "VectorMaker: " + acvm.name(), expectedSalesPredictor));
 
 		fastPredictors.add(new KMeansPredictor(3, chvm, "VectorMaker: " + chvm.name(), expectedSalesPredictor));
-		fastPredictors.add(new KMeansPredictor(5, chvm, "VectorMaker: " + chvm.name(), expectedSalesPredictor));
+		//fastPredictors.add(new KMeansPredictor(5, chvm, "VectorMaker: " + chvm.name(), expectedSalesPredictor));
 
 		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
-			for(int k = 2; k < 5; k++) {
+			int[] kNeighbor = {4};
+			for(int k: kNeighbor) {
 				//fastPredictors.add(new KMeansPredictor(k, vectorMaker, "VectorMaker: " + vectorMaker.name(), expectedSalesPredictor));
-				fastPredictors.add(new KNearestNeighbour(new EuclideanMetric(vectorMaker), k, "Euclidean", expectedSalesPredictor));
+				fastPredictors.add(new KNearestNeighbour(new EuclideanMetric(acvm), k, "Euclidean", expectedSalesPredictor));
+				//fastPredictors.add(new KNearestNeighbour(new EuclideanMetric(chvm), k, "Euclidean", expectedSalesPredictor));
 			}
 			
 			for(double ridge : ridges){
@@ -317,15 +320,29 @@ public class Project {
 		fastPredictors.add(new LogisticRegressionPredictor(0.2, 
 			new PolynomialVectorMaker<Issue>(3, acvm), expectedSalesPredictor));
 	
+		//Good Predictor
 		fastPredictors.add(new LogisticRegressionPredictor(0.2, chvm, expectedSalesPredictor));
 
-		//VectorMaker<Issue> pvm = new PolynomialVectorMaker<Issue>(3, chvm);
+		VectorMaker<Issue> pvm = new PolynomialVectorMaker<Issue>(3, chvm);
 		//fastPredictors.add(new LinearRegressionPredictor(0.2, pvm, expectedSalesPredictor));
 
 		fastPredictors.add(new ExpectedSalesPredictor(expectedSalesPredictor));
 		
 		return fastPredictors;
 
+	}
+	
+	public static List<ISalesPredictor> getWeightedMajorityPredictors() {
+		List<ISalesPredictor> retVal = new ArrayList<ISalesPredictor>();
+		
+		double[] betas = {.85, .9, .95};
+		
+		for(double beta: betas) {
+			List<ISalesPredictor> experts = getFastPredictors();
+			retVal.add(new WeightedMajorityPredictor(expectedSalesPredictor, beta, experts));
+		}
+		
+		return retVal;
 	}
 	
 }
