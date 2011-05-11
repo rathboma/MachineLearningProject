@@ -82,10 +82,10 @@ public class Project {
 		}
 		
 		Issue predictMe = new Issue();
-		predictMe.date = new Date(System.currentTimeMillis());
+		//predictMe.date = new Date(System.currentTimeMillis());
 		
 		//if (true) return;
-		predictMe.dateString = "2011-04-23";
+		predictMe.dateString = "2011-05-07";
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			predictMe.date = dateFormat.parse(predictMe.dateString);
@@ -99,6 +99,7 @@ public class Project {
 		System.out.println();
 		try {
 			predictMe.extractImageFeatures("./data/");
+			System.out.println("AVColor: " + predictMe.avgRed + " " + predictMe.avgGreen + " " + predictMe.avgBlue);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -121,21 +122,20 @@ public class Project {
 		List<ISalesPredictor> allPredictors = new ArrayList<ISalesPredictor>();
         allPredictors.addAll(fastPredictors);
         allPredictors.addAll(slowPredictors);
-       double total = 0.0;
-        double result = 0.0;
+        double total = 0.0;
         for(ISalesPredictor predictor: allPredictors) {
             predictor.Train(issues);
             
-            result = predictor.Predict(predictMe);
-            if(result > 0) result = 1.0;
-            if(result <= 0) result = -1.0;
-            System.out.println(predictor.name() + " predicted " + result);
-            total += result;
+            double result = predictor.Predict(predictMe);
+            int guess = (result > 0)? 1: -1;
+            System.out.println(predictor.name() + " result was " + result);
+            System.out.println(predictor.name() + " predicted " + guess);
+            total += guess;
         }
         total = total / allPredictors.size();
         System.out.println("average: " + total);
         
-        if(true)return;
+       // if(true)return;
         PredictorTester tester = new PredictorTester(expectedSalesPredictor);
         final Map<ISalesPredictor, Map<DataSetType, BatchPredictionResults>> results = 
         	new HashMap<ISalesPredictor, Map<DataSetType, BatchPredictionResults>>();
@@ -326,7 +326,7 @@ public class Project {
 		//fastPredictors.add(new LinearRegressionPredictor(0.2, pvm, expectedSalesPredictor));
 
 		//shouldn't be in here!!
-		//fastPredictors.add(new ExpectedSalesPredictor(expectedSalesPredictor));
+		fastPredictors.add(new ExpectedSalesPredictor(expectedSalesPredictor));
 		
 		return fastPredictors;
 
