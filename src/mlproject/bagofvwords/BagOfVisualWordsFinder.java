@@ -14,12 +14,12 @@ import mlproject.predictors.clustering.kMeansClustering;
 
 public class BagOfVisualWordsFinder {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		String dataFolder = "./data/images/";
 		File dataFolderFile = new File(dataFolder);
 		String[] images = dataFolderFile.list();
 		
-		List<Double[]> allPatches = new LinkedList<Double[]>();
+		List<BufferedImage> bImages = new ArrayList<BufferedImage>();
 		
 		for(String image: images) {
 			System.out.println(image);
@@ -30,24 +30,37 @@ public class BagOfVisualWordsFinder {
 					System.out.println("Error: null image " + image);
 					continue;
 				}
-
-				List<Double[]> patches = getPatches(5, 5, bimage);
-				allPatches.addAll(patches);
+				
+				bImages.add(bimage);
 			} catch (IOException e) {
-				e.printStackTrace();
+			 	e.printStackTrace();
 			}
 		}
 		
-		kMeansClustering kMeans = getKMeans(allPatches, 100);
-
+		System.out.println(bImages.size());
+		Double[][] allPatches = new Double[bImages.size()*1131][];
+		System.out.println("Allocated Space");
+		
+		int i = 0;
+		for(BufferedImage bimage: bImages) {
+			System.out.println("Working on image.. i = " + i);
+			List<Double[]> patches = getPatches(5, 5, bimage);
+			for(Double[] patch: patches) {
+				allPatches[i] = patch;
+				i++;
+			}
+		}
+		
+		System.out.println("** " + i + " :: " + allPatches.length);
+		
+		//kMeansClustering kMeans = getKMeans(allPatches, 100);		
 	}
 	
-	private static kMeansClustering getKMeans(List<Double[]> patches, int k) {
+	private static kMeansClustering getKMeans(Double[][] patches, int k) {
 		System.out.println("Starting k-means, k="+k);
 		kMeansClustering kMeans = new kMeansClustering(k);
-		Double[][] dataSet = (Double[][]) patches.toArray();
-		System.out.println("!! " + dataSet.length + " " + dataSet[0].length);
-		kMeans.computePrototypes(dataSet);
+		System.out.println("!! " + patches.length + " " + patches[0].length);
+		kMeans.computePrototypes(patches);
 		return kMeans;
 	}
 
