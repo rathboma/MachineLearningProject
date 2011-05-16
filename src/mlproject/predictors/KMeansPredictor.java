@@ -9,6 +9,7 @@ import mlproject.abstractMath.DoubleVectorUtils;
 import mlproject.abstractMath.VectorMaker;
 import mlproject.models.Issue;
 
+// @TODO: This should use the kMeansClustering Class
 public class KMeansPredictor extends BasePredictor {
 
 	public int k;
