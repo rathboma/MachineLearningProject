@@ -40,9 +40,11 @@ public class kMeansClustering {
 		
 		boolean firstLoop = true;
 		while( firstLoop || !converged(responsibilities, lastR)){
+			System.out.println("Making a k-means pass");
 			lastR = responsibilities;
 			responsibilities = new Double[k][dataSet.length];
 			for(int i = 0; i < dataSet.length; i++){
+				if (i%1000 == 0) System.out.println("Data point: " + i);
 				int closest = 0;
 				double closestDistance = -1;
 				for(int j = 0; j < prototypes.length; j++){
@@ -82,10 +84,12 @@ public class kMeansClustering {
 		
 	// Initializes the prototype array to the first k elements of the issues array
 	private Double[][] initializePrototypes(Double[][] issues, int num){
+		System.out.println("Init prototypes...");
 		if(issues.length < num ) return null;
 		ArrayList<Integer> alreadyFound = new ArrayList<Integer>();
 		Double[][] results = new Double[num][issues[0].length];
 		for(int i = 0; i < num; i++){
+			System.out.println("Getting prototype " + i);
 			Random r = new Random();
 			int issueNum = -1;
 			while(issueNum == -1 || alreadyFound.contains(issueNum)) 
@@ -100,6 +104,7 @@ public class kMeansClustering {
 		
 	//private void recomputePrototypes(Double[][] issues, Double[][] responsibilities, Issue[] issueObjects){
 	private void recomputePrototypes(Double[][] issues, Double[][] responsibilities){
+		System.out.println("Recomputing...");
 		for(int i = 0; i < responsibilities.length; i++){
 			prototypes[i] = new Double[prototypes[i].length];
 			//prototypePredictions[i] = 0.0;

@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -38,7 +37,8 @@ public class BagOfVisualWordsFinder {
 		}
 		
 		System.out.println(bImages.size());
-		Double[][] allPatches = new Double[bImages.size()*1131][];
+		//Double[][] allPatches = new Double[bImages.size()*1131][];
+		Double[][] allPatches = new Double[344926][]; //This is what worked.. not sure about how to get to that #
 		System.out.println("Allocated Space");
 		
 		int i = 0;
@@ -53,7 +53,14 @@ public class BagOfVisualWordsFinder {
 		
 		System.out.println("** " + i + " :: " + allPatches.length);
 		
-		//kMeansClustering kMeans = getKMeans(allPatches, 100);		
+		int k = 100;
+		kMeansClustering kMeans = getKMeans(allPatches, k);
+		
+		for(int j = 0; j < k; j++) {
+			System.out.print("Prototype " + j + ": ");
+			for(double d: kMeans.getPrototype(j)) System.out.print(d + ", ");
+			System.out.println("");
+		}
 	}
 	
 	private static kMeansClustering getKMeans(Double[][] patches, int k) {
