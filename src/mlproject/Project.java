@@ -85,7 +85,7 @@ public class Project {
 		//predictMe.date = new Date(System.currentTimeMillis());
 		
 		//if (true) return;
-		predictMe.dateString = "2011-05-14";
+		predictMe.dateString = "2011-05-21";
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		try {
 			predictMe.date = dateFormat.parse(predictMe.dateString);
