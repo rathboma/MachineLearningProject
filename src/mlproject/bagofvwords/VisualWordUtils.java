@@ -98,4 +98,12 @@ public class VisualWordUtils {
 		File f = new File(filename);
 		ImageIO.write(im, "bmp", f);
 	}
+	
+	public static int[] insersectionKernelDotProduct(int[] histogram1, int[] histogram2) {
+		int[] retVal = new int[histogram1.length];
+		for(int i = 0; i < histogram1.length; i++) {
+			retVal[i] = Math.min(histogram1[i], histogram2[i]);
+		}
+		return retVal;
+	}
 }
