@@ -7,11 +7,13 @@ import mlproject.abstractMath.DoubleVectorUtils;
 
 public class kMeansClustering {
 	final public int k;
+	final public long maxTurns;
 	
 	Double[][] prototypes;
 	
-	public kMeansClustering(int k) {
+	public kMeansClustering(int k, int maxTurns) {
 		this.k = k;
+		this.maxTurns = maxTurns;
 	}
 
 	public int getClosestPrototype(Double[] v) {
@@ -37,9 +39,9 @@ public class kMeansClustering {
 		Double[][] responsibilities = new Double[k][dataSet.length];
 		Double[][] lastR = new Double[k][dataSet.length];
 		
-		
-		boolean firstLoop = true;
-		while( firstLoop || !converged(responsibilities, lastR)){
+		int turnNum = 0;
+		while((turnNum==0) || !converged(responsibilities, lastR)){
+			if (turnNum >= maxTurns) break;
 			System.out.println("Making a k-means pass");
 			lastR = responsibilities;
 			responsibilities = new Double[k][dataSet.length];
@@ -69,7 +71,7 @@ public class kMeansClustering {
 			//for each prototype recompute so that it is the average of all the assigned samples
 			
 			
-			firstLoop = false;
+			turnNum++;
 		}
 	}
 		
@@ -96,7 +98,8 @@ public class kMeansClustering {
 				issueNum = Math.abs(r.nextInt()) % issues.length;
 			alreadyFound.add(issueNum);
 			for(int j = 0; j < issues[i].length; j++ ){
-				results[i][j] = new Double(issues[issueNum][j].doubleValue());
+				Double[] issueVector = issues[issueNum];
+				results[i][j] = issueVector[j];
 			}
 		}
 		return results;

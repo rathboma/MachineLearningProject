@@ -16,7 +16,7 @@ public class KMeansPredictor extends BasePredictor {
 	
 	Double[][] prototypes;
 	Double[] prototypePredictions;
-	VectorMaker<Issue> vectorMaker;
+	final VectorMaker<Issue> vectorMaker;
 	
 	final String id;
 	
@@ -75,14 +75,14 @@ public class KMeansPredictor extends BasePredictor {
 	}
 	
 	@Override
-	public void trainPredictor(Collection<Issue> issues) {		
-		VectorMaker<Issue> maker = vectorMaker;
+	public void trainPredictor(Collection<Issue> issues) {
+		
 		Issue[] allIssues = new Issue[issues.size()];
 		
 		allIssues = issues.toArray(allIssues);
-		Double[][] issueVectors = new Double[issues.size()][maker.vectorSize()];
+		Double[][] issueVectors = new Double[issues.size()][vectorMaker.vectorSize()];
 		for(int i = 0; i < issues.size(); i++){
-			issueVectors[i] = maker.toVector(allIssues[i]);
+			issueVectors[i] = vectorMaker.toVector(allIssues[i]);
 		}
 		
 		prototypes = initializePrototypes(issueVectors, k); //copy some issue
@@ -141,8 +141,7 @@ public class KMeansPredictor extends BasePredictor {
 
 	@Override
 	public double Predict(Issue issue) {
-		VectorMaker<Issue> maker = vectorMaker;
-		Double[] issueVector = maker.toVector(issue);
+		Double[] issueVector = vectorMaker.toVector(issue);
 		int closest = -1;
 		double closestValue = 0;
 		for(int i = 0; i < prototypes.length; i++){
@@ -156,6 +155,8 @@ public class KMeansPredictor extends BasePredictor {
 		return prototypePredictions[closest];
 	}
 
+	public Double[][] getPrototypes() { return prototypes; }
+	
 	@Override
 	public String name() {
 		return "k-means, k = " + k + ", " +id;

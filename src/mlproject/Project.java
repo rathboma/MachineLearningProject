@@ -19,6 +19,7 @@ import mlproject.abstractMath.impl.EuclideanMetric;
 import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker;
 import mlproject.abstractMath.vectorMaker.ColorHistogramVectorMaker;
 import mlproject.abstractMath.vectorMaker.PolynomialVectorMaker;
+import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker.Type;
 import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
@@ -281,14 +282,18 @@ public class Project {
 		List<VectorMaker<Issue>> vectorMakers = VectorMakerLists.getBaseVMs();
 		List<ISalesPredictor> fastPredictors = new ArrayList<ISalesPredictor>();
 
-		VectorMaker<Issue> acvm = new AverageColorVectorMaker();
+		VectorMaker<Issue> acvm_lo = new AverageColorVectorMaker(Type.RGB_LOG_ODDS);
+		VectorMaker<Issue> acvm_mo = new AverageColorVectorMaker(Type.RGB_MODE);
+		VectorMaker<Issue> acvm = new AverageColorVectorMaker(Type.RGB);
 		VectorMaker<Issue> chvm = new ColorHistogramVectorMaker();
 		
 		///double[] standardDevs = {0.1, 0.2, 0.5, 1, 2, 5, 10, 30, 100};
 		//double[] standardDevs = {0.5,  2, 10};
 		double[] standardDevs = {0.5};
 		for(int i = 0; i < standardDevs.length; i++) {
-			fastPredictors.add(new SumOfGaussianPredictor(acvm, standardDevs[i], expectedSalesPredictor));
+			//fastPredictors.add(new SumOfGaussianPredictor(acvm, standardDevs[i], expectedSalesPredictor));
+			fastPredictors.add(new SumOfGaussianPredictor(acvm_lo, standardDevs[i], expectedSalesPredictor));
+			//fastPredictors.add(new SumOfGaussianPredictor(acvm_mo, standardDevs[i], expectedSalesPredictor));
 			//fastPredictors.add(new SumOfGaussianPredictor(chvm, standardDevs[i], expectedSalesPredictor));
 		}
 		
@@ -296,11 +301,15 @@ public class Project {
 		//double[] ridges = {0.2, 0.1, 0.005};
 		double[] ridges = {0.2};
 		
-		fastPredictors.add(new KMeansPredictor(3, acvm, "VectorMaker: " + acvm.name(), expectedSalesPredictor));
+		//fastPredictors.add(new KMeansPredictor(3, acvm, "VectorMaker: " + acvm.name(), expectedSalesPredictor));
+		fastPredictors.add(new KMeansPredictor(3, acvm_lo, "VectorMaker: " + acvm_lo.name(), expectedSalesPredictor));
+		//fastPredictors.add(new KMeansPredictor(3, acvm_mo, "VectorMaker: " + acvm_mo.name(), expectedSalesPredictor));
 		fastPredictors.add(new KMeansPredictor(5, acvm, "VectorMaker: " + acvm.name(), expectedSalesPredictor));
-
-		fastPredictors.add(new KMeansPredictor(3, chvm, "VectorMaker: " + chvm.name(), expectedSalesPredictor));
+		//fastPredictors.add(new KMeansPredictor(5, acvm_lo, "VectorMaker: " + acvm_lo.name(), expectedSalesPredictor));
+		//fastPredictors.add(new KMeansPredictor(5, acvm_mo, "VectorMaker: " + acvm_mo.name(), expectedSalesPredictor));
 		//fastPredictors.add(new KMeansPredictor(5, chvm, "VectorMaker: " + chvm.name(), expectedSalesPredictor));
+
+		fastPredictors.add(new KMeansPredictor(50, acvm_mo, "VectorMaker: " + acvm_mo.name(), expectedSalesPredictor));
 
 		for(VectorMaker<Issue> vectorMaker: vectorMakers) {
 			int[] kNeighbor = {4};
@@ -317,8 +326,8 @@ public class Project {
 		}
 		
 		fastPredictors.add(new LogisticRegressionPredictor(0.2, 
-			new PolynomialVectorMaker<Issue>(3, acvm), expectedSalesPredictor));
-	
+				new PolynomialVectorMaker<Issue>(3, acvm), expectedSalesPredictor));
+			
 		//Good Predictor
 		fastPredictors.add(new LogisticRegressionPredictor(0.2, chvm, expectedSalesPredictor));
 

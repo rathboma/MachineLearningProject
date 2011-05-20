@@ -64,6 +64,17 @@ public class DoubleVectorUtils {
 		return result;
 	}
 	
+	public static String vectorToString(Double[] v) {
+		StringBuffer sb = new StringBuffer();
+		
+		for(int i=0; i < v.length; i++) {
+			sb.append(v[i]);
+			if (i != v.length-1) sb.append(", ");
+		}
+		
+		return sb.toString();
+	}
+	
 	public static void divideAll(Double[] vector, double divisor ){
 		for(int i = 0; i < vector.length; i++){
 			if(divisor == 0.0){

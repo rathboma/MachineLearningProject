@@ -3,22 +3,29 @@ package mlproject;
 import java.util.Collection;
 import java.util.Date;
 
+import mlproject.abstractMath.DoubleVectorUtils;
 import mlproject.abstractMath.VectorMaker;
 import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker;
+import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker.Type;
 import mlproject.models.Issue;
+import mlproject.predictors.KMeansPredictor;
 import mlproject.predictors.SumOfGaussianPredictor;
 
 public class ProjectFindBestColor {
 	
-	final static int COLOR_HOPPER = 4;
+	final static int COLOR_HOPPER = 5;
 	
 	public static void main(String[] args){
 		Collection<Issue> issues = Project.loadIssues();
 		
-		VectorMaker<Issue> vm = new AverageColorVectorMaker();
-		ISalesPredictor predictor = new SumOfGaussianPredictor(vm, 0.5, Project.expectedSalesPredictor);
+		VectorMaker<Issue> vm = new AverageColorVectorMaker(Type.RGB_MODE);
+		//ISalesPredictor predictor = new SumOfGaussianPredictor(vm, 0.5, Project.expectedSalesPredictor);
+		KMeansPredictor predictor = new KMeansPredictor(5, vm, "best color predictor", Project.expectedSalesPredictor);
 		
 		predictor.Train(issues);
+		
+		Double[][] prototypes = predictor.getPrototypes();
+		
     
 		int colorGap = (int) Math.pow(2, COLOR_HOPPER);
 		
@@ -38,7 +45,7 @@ public class ProjectFindBestColor {
 				for(int blue = 0; blue < 256; blue+=colorGap) {
 					Issue predictMe = new Issue();
 					predictMe.date = new Date(System.currentTimeMillis());
-					predictMe.setColors(((double)red) / 256, ((double)green) / 256, ((double)blue) / 256);
+					predictMe.setColors((double)red, (double)green, (double)blue);
 					
 			        double result = predictor.Predict(predictMe);
 			        System.out.println("("+ red + "," + green + "," + blue + ") result " + result);

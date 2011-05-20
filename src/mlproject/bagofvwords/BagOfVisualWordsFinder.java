@@ -3,12 +3,14 @@ package mlproject.bagofvwords;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import mlproject.abstractMath.DoubleVectorUtils;
 import mlproject.predictors.clustering.kMeansClustering;
 
 public class BagOfVisualWordsFinder {
@@ -20,7 +22,10 @@ public class BagOfVisualWordsFinder {
 		
 		List<BufferedImage> bImages = new ArrayList<BufferedImage>();
 		
+		int i = -1;
 		for(String image: images) {
+			i++;
+			if ((i%10) != 0) continue; //Sample the data.
 			System.out.println(image);
 			try {
 				BufferedImage bimage = ImageIO.read(new File(dataFolder + image));
@@ -41,31 +46,48 @@ public class BagOfVisualWordsFinder {
 		Double[][] allPatches = new Double[344926][]; //This is what worked.. not sure about how to get to that #
 		System.out.println("Allocated Space");
 		
-		int i = 0;
+		int j = 0;
 		for(BufferedImage bimage: bImages) {
-			System.out.println("Working on image.. i = " + i);
+			System.out.println("Working on image.. j = " + j);
 			List<Double[]> patches = getPatches(5, 5, bimage);
 			for(Double[] patch: patches) {
-				allPatches[i] = patch;
-				i++;
+				allPatches[j] = patch;
+				j++;
 			}
 		}
 		
-		System.out.println("** " + i + " :: " + allPatches.length);
-		
-		int k = 100;
-		kMeansClustering kMeans = getKMeans(allPatches, k);
-		
-		for(int j = 0; j < k; j++) {
-			System.out.print("Prototype " + j + ": ");
-			for(double d: kMeans.getPrototype(j)) System.out.print(d + ", ");
-			System.out.println("");
+		System.out.println("** " + j + " :: " + allPatches.length);
+		if (j < allPatches.length) {
+			Double[][] allPatchesNew = new Double[j][];
+			for(int index = 0; index<j; index++) {
+				allPatchesNew[index] = allPatches[index];
+			}
+			
+			allPatches = allPatchesNew;
 		}
+		System.out.println("** " + j + " :: " + allPatches.length);
+		
+		int k = 64;
+		int maxTurns = 100;
+		
+		long currTime = System.currentTimeMillis();
+		kMeansClustering kMeans = getKMeans(allPatches, k, maxTurns);
+		System.out.println("time: " + (System.currentTimeMillis() - currTime));
+		
+		FileWriter fr = new FileWriter("imageProtos.txt");
+		for(int j2 = 0; j2 < k; j2++) {
+			Double[] proto = kMeans.getPrototype(j2);
+			System.out.println("Prototype " + j2 + ": " + DoubleVectorUtils.vectorToString(proto));
+			fr.append(DoubleVectorUtils.vectorToString(proto));
+			fr.append("\n");
+		}
+		
+		fr.close();
 	}
 	
-	private static kMeansClustering getKMeans(Double[][] patches, int k) {
-		System.out.println("Starting k-means, k="+k);
-		kMeansClustering kMeans = new kMeansClustering(k);
+	private static kMeansClustering getKMeans(Double[][] patches, int k, int maxTurns) {
+		System.out.println("Starting k-means, k="+k + " : numTurns = " + maxTurns);
+		kMeansClustering kMeans = new kMeansClustering(k, maxTurns);
 		System.out.println("!! " + patches.length + " " + patches[0].length);
 		kMeans.computePrototypes(patches);
 		return kMeans;

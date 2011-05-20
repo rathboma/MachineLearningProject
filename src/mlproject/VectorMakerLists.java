@@ -9,6 +9,7 @@ import mlproject.abstractMath.vectorMaker.ColorHistogramVectorMaker;
 import mlproject.abstractMath.vectorMaker.CombinedVectorMaker;
 import mlproject.abstractMath.vectorMaker.PolynomialVectorMaker;
 import mlproject.abstractMath.vectorMaker.WeightedVectorMaker;
+import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker.Type;
 import mlproject.models.Issue;
 
 public class VectorMakerLists {
@@ -34,7 +35,7 @@ public class VectorMakerLists {
 	public static List<VectorMaker<Issue>> getBaseVMs() {
 		List<VectorMaker<Issue>> baseVMs = new ArrayList<VectorMaker<Issue>>();
 		
-		VectorMaker<Issue> averageColor = new AverageColorVectorMaker();
+		VectorMaker<Issue> averageColor = new AverageColorVectorMaker(Type.RGB_LOG_ODDS);
 		VectorMaker<Issue> weighted = new WeightedVectorMaker();
 		VectorMaker<Issue> colorHistogram = new ColorHistogramVectorMaker();
 		

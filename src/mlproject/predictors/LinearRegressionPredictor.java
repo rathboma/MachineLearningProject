@@ -8,6 +8,7 @@ import mlproject.ISalesPredictor;
 import mlproject.Project;
 import mlproject.abstractMath.VectorMaker;
 import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker;
+import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker.Type;
 import mlproject.models.Issue;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.Attribute;
@@ -72,7 +73,7 @@ public class LinearRegressionPredictor extends BasePredictor {
 		}
 		
 
-		LinearRegressionPredictor p = new LinearRegressionPredictor(0, new AverageColorVectorMaker(), Project.expectedSalesPredictor);
+		LinearRegressionPredictor p = new LinearRegressionPredictor(0, new AverageColorVectorMaker(Type.RGB_LOG_ODDS), Project.expectedSalesPredictor);
 		System.out.println("size: " + p.attributes.size());
 		Instances instances = new Instances("Issue", p.attributes, 300);
 
