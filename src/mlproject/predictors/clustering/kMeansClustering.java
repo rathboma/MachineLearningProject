@@ -15,8 +15,12 @@ public class kMeansClustering {
 		this.k = k;
 		this.maxTurns = maxTurns;
 	}
-
+	
 	public int getClosestPrototype(Double[] v) {
+		return getClosestPrototype(v, prototypes);
+	}
+	
+	public static int getClosestPrototype(Double[] v, Double[][] prototypes) {
 		int closest = -1;
 		double closestValue = 0;
 		for(int i = 0; i < prototypes.length; i++){
@@ -26,7 +30,7 @@ public class kMeansClustering {
 				closestValue = distance;
 			}
 		}
-		return closest;
+		return closest;		
 	}
 	
 	public Double[] getPrototype(int i) {

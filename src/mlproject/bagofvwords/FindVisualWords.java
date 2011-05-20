@@ -2,7 +2,9 @@ package mlproject.bagofvwords;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,7 +15,7 @@ import javax.imageio.ImageIO;
 import mlproject.abstractMath.DoubleVectorUtils;
 import mlproject.predictors.clustering.kMeansClustering;
 
-public class BagOfVisualWordsFinder {
+public class FindVisualWords {
 
 	public static void main(String[] args) throws IOException {
 		String dataFolder = "./data/images/";
@@ -25,7 +27,7 @@ public class BagOfVisualWordsFinder {
 		int i = -1;
 		for(String image: images) {
 			i++;
-			if ((i%10) != 0) continue; //Sample the data.
+			if ((i%5) != 0) continue; //Sample the data.
 			System.out.println(image);
 			try {
 				BufferedImage bimage = ImageIO.read(new File(dataFolder + image));
@@ -68,7 +70,7 @@ public class BagOfVisualWordsFinder {
 		System.out.println("** " + j + " :: " + allPatches.length);
 		
 		int k = 64;
-		int maxTurns = 100;
+		int maxTurns = 150;
 		
 		long currTime = System.currentTimeMillis();
 		kMeansClustering kMeans = getKMeans(allPatches, k, maxTurns);
@@ -133,6 +135,26 @@ public class BagOfVisualWordsFinder {
 				patchIndex += 3;
 			}
 		}
+		return retVal;
+	}
+	
+	public static Double[][] loadVisualWords(String filename) throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(filename));
+		ArrayList<Double[]> array = new ArrayList<Double[]>();
+		while(true) {
+			String line = br.readLine();
+			if (line == null) break;
+			String[] vals = line.split(", ");
+			Double[] dvals = new Double[vals.length];
+			for(int i = 0; i < vals.length; i++) {
+				dvals[i] = Double.parseDouble(vals[i]);
+			}
+			array.add(dvals);
+		}
+		
+		Double[][] retVal = new Double[array.size()][];
+		for(int i = 0; i < array.size(); i++) retVal[i] = array.get(i);
+		
 		return retVal;
 	}
 
