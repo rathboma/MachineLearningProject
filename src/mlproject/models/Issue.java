@@ -10,6 +10,8 @@ import java.util.Calendar;
 import java.util.Date;
 import javax.imageio.ImageIO;
 
+import mlproject.bagofvwords.VisualWordUtils;
+
 public class Issue{
     private static final DateFormat firstIssueDateFormat = new SimpleDateFormat("MM/dd/yyyy");
     public static Date firstIssue;
@@ -35,11 +37,13 @@ public class Issue{
 	public Boolean hasSpecial, isSpecialEdition, isAnniverseryEdition;
 	
 	public Double avgRed = 0.0, avgGreen = 0.0, avgBlue = 0.0;
-	
 	public Double logOddsAvgRed = 0.0, logOddsAvgGreen = 0.0, logOddsAvgBlue = 0.0;
 	
 	public static int colorLimit = 4;
 	public Double[][][] colorHistogram = new Double[colorLimit][colorLimit][colorLimit];
+	
+	public int[] vWordHistogram;
+	
 	public String imageFile;
 	
 	public Issue() {
@@ -104,7 +108,7 @@ public class Issue{
 	//}
 	
 	
-	public void extractImageFeatures(String folder) throws IOException{
+	public void extractImageFeatures(String folder, Double[][] vwords) throws IOException{
 		String img = folder + this.dateString + ".jpg";
 		imageAttached = true;
 		File file= new File(img);
@@ -146,7 +150,8 @@ public class Issue{
 		    }
 	    }
 	    
-		//TODO: Matthew to do more.
+		if (vwords != null)
+			vWordHistogram = VisualWordUtils.getVWordDistribution(image, vwords);
 	}
 	
 	public void setColors(double avgRed, double avgGreen, double avgBlue) {

@@ -1,17 +1,24 @@
 package mlproject.bagofvwords;
 
 import java.awt.Color;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import mlproject.abstractMath.DoubleVectorUtils;
+import mlproject.Project;
+import mlproject.models.Issue;
 import mlproject.predictors.clustering.kMeansClustering;
 
 public class VisualWordUtils {
+	public static int[] getVWordDistribution(BufferedImage bimage, Double[][] vWords) throws IOException {
+		return getVWordDistribution(bimage, vWords, 5, 5);
+	}
+	
 	public static int[] getVWordDistribution(BufferedImage bimage, Double[][] vWords, int patchx, int patchy) throws IOException {
 		
 		List<Double[]> patches = FindVisualWords.getPatches(patchx, patchy, bimage);
@@ -28,38 +35,15 @@ public class VisualWordUtils {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		String dataFolder = "./data/images/";
-		File dataFolderFile = new File(dataFolder);
-		String[] images = dataFolderFile.list();
-		
-		//List<BufferedImage> bImages = new ArrayList<BufferedImage>();
-		Double[][] prototypes = FindVisualWords.loadVisualWords("imageProtos64.txt");
-		System.out.println("Prototypes:");
-		for(int i = 0; i < prototypes.length; i++) {
-			System.out.println("Prototype " + i + ": " + DoubleVectorUtils.vectorToString(prototypes[i]));
-		}
-		seeVisualWords(prototypes, "vwords.bmp");
-		
-		for(String image: images) {
-			System.out.println(image);
-			try {
-				BufferedImage bimage = ImageIO.read(new File(dataFolder + image));
-				
-				if (bimage == null) {
-					System.out.println("Error: null image " + image);
-					continue;
-				}
-				
-				int[] histogram = getVWordDistribution(bimage, prototypes, 5, 5);
-				
-				System.out.println(image);
-				System.out.println("Histogram:");
-				for(int i = 0; i < histogram.length; i++) System.out.println(i + " :: " + histogram[i]);
-				System.out.println("");
-			} catch (IOException e) {
-			 	e.printStackTrace();
+		Collection<Issue> issues = Project.loadIssues();
+		for(Issue issue: issues) {
+			System.out.println(issue.dateString);
+			for(int i = 0; i < issue.vWordHistogram.length; i++) {
+				System.out.println(i + " :: " + issue.vWordHistogram[i]);
 			}
 		}
+		
+		
 	}
 	
 	public static void seeVisualWords(Double[][] prototypes, String filename) throws IOException {

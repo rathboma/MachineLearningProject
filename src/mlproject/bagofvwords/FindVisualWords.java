@@ -16,7 +16,8 @@ import mlproject.abstractMath.DoubleVectorUtils;
 import mlproject.predictors.clustering.kMeansClustering;
 
 public class FindVisualWords {
-
+	final public static String vWordFile = "imageProtos.txt";
+	
 	public static void main(String[] args) throws IOException {
 		String dataFolder = "./data/images/";
 		File dataFolderFile = new File(dataFolder);
@@ -76,7 +77,7 @@ public class FindVisualWords {
 		kMeansClustering kMeans = getKMeans(allPatches, k, maxTurns);
 		System.out.println("time: " + (System.currentTimeMillis() - currTime));
 		
-		FileWriter fr = new FileWriter("imageProtos.txt");
+		FileWriter fr = new FileWriter(vWordFile);
 		for(int j2 = 0; j2 < k; j2++) {
 			Double[] proto = kMeans.getPrototype(j2);
 			System.out.println("Prototype " + j2 + ": " + DoubleVectorUtils.vectorToString(proto));

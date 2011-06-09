@@ -1,6 +1,5 @@
 package mlproject;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -20,6 +19,7 @@ import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker;
 import mlproject.abstractMath.vectorMaker.ColorHistogramVectorMaker;
 import mlproject.abstractMath.vectorMaker.PolynomialVectorMaker;
 import mlproject.abstractMath.vectorMaker.AverageColorVectorMaker.Type;
+import mlproject.bagofvwords.FindVisualWords;
 import mlproject.dataimport.Importer;
 import mlproject.models.Issue;
 import mlproject.predictors.ExpectedSalesPredictor;
@@ -99,7 +99,8 @@ public class Project {
 
 		System.out.println();
 		try {
-			predictMe.extractImageFeatures("./data/");
+			//Double[][] prototypes = FindVisualWords.loadVisualWords(FindVisualWords.vWordFile);
+			predictMe.extractImageFeatures("./data/", null);
 			System.out.println("AVColor: " + predictMe.avgRed + " " + predictMe.avgGreen + " " + predictMe.avgBlue);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -195,63 +196,30 @@ public class Project {
 	}
 	
 	static public Collection<Issue> loadIssues() {
-		Collection<Issue> issues = null;
+		
 		try {
+			Double[][] prototypes = FindVisualWords.loadVisualWords(FindVisualWords.vWordFile);
 			System.out.println("Loading issues from csv....");
 			
-			File[] images = null;
-			
-			File testEnv = new File("/Users/matthew/");
-			issues = Importer.getIssues("./data/ns.csv");
-//			if (testEnv.exists()) {
-//				issues = Importer.getIssues("/Users/matthew/Downloads/Consolidated.csv");
-//				images = Importer.getImages("/Users/matthew/Pictures/cover_images/");
-//			} else {
-//				//issues = Importer.getIssues("/home/mes592/Desktop/Consolidated.csv");
-//				issues = Importer.getIssues("/home/mes592/New Scientist.csv");
-//				images = Importer.getImages("/home/mes592/images/cover_images/");
-//			}
+			Collection<Issue> issues = Importer.getIssues("./data/ns.csv");
 			
 			for(Issue i : issues){
 				try{
-					i.extractImageFeatures("./data/images/");
+					//i.extractImageFeatures("./data/images/", prototypes);
+					i.extractImageFeatures("./data/images/", null);  //Use this one to speed it up!
 				}catch(IOException e){
 					System.out.println("could not get image data for issue " + i.dateString);
 				}catch(Exception e){
 					System.out.println(e);
-				}
-				
-				
+				}				
 			}
 			
-			
-
-//			HashMap<File, Date> dateMappings = Importer.extractIssueDates(images);
-//			System.out.println("Extracting image features...");
-//			Set<String> errorSet = new HashSet<String>();
-//			for(Issue issue: issues) {
-//				System.out.print(".");
-//				for(File image : images){
-//					if(issue.shouldOwn(dateMappings.get(image))){
-//						try {
-//							issue.extractImageFeatures(image.getAbsolutePath());
-//							//System.out.println("Log Odds RGB avg: " + issue.logOddsAvgRed + " " + issue.logOddsAvgGreen + " " + issue.logOddsAvgBlue);
-//						} catch(IOException e){
-//							errorSet.add(image.getName() + " Issue: " + issue.Issue);
-//						}
-//						break;
-//					}
-//				}
-//			}
-			
-//			System.out.println("Errors in the following images:");
-//			for(String err: errorSet) System.out.println(err);
 			System.out.println();
+			return issues;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		}
-		return issues;
 	}
 	
 	private static List<ISalesPredictor> getSlowPredictors() {
